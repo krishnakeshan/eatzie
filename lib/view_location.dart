@@ -223,7 +223,7 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
                         child: Row(
                           children: <Widget>[
                             Text(
-                              "Seafood, Tea, and Biscuits",
+                              "Tea, and Biscuits",
                               style: TextStyle(
                                 color: Colors.grey,
                               ),

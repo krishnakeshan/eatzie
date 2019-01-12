@@ -109,6 +109,14 @@ class _LocationListViewItemState extends State<LocationListViewItem> {
                 ],
               ),
             ),
+            //Share Button
+            IconButton(
+              icon: Icon(Icons.share),
+              iconSize: 20,
+              color: Colors.deepOrange,
+              tooltip: "Share this",
+              onPressed: () {},
+            ),
           ],
         ),
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:eatzie/custom_widgets/list_view_items/location_list_view_item.dart';
 import 'view_location.dart';
+import 'orders_tab_widget.dart';
 
 void main() => runApp(EatzieApp());
 
@@ -28,11 +29,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   //properties
   int _selectedIndex = 0;
-  final _tabTitles = ["Home", "Feed", "Inbox", "Orders", "Profile"];
+  final _tabTitles = ["Home", "Feed", "Orders", "Inbox", "Profile"];
   final _children = [
     HomeWidget(),
     HomeWidget(),
-    HomeWidget(),
+    OrdersTabWidget(),
     HomeWidget(),
     HomeWidget(),
   ];
@@ -50,11 +51,11 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {},
           )
         ],
-        centerTitle: false,
         textTheme: TextTheme(
           title: TextStyle(
             fontSize: 16,
             color: Colors.black,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),
@@ -110,30 +111,35 @@ class _HomeWidgetState extends State<HomeWidget> {
     return Column(
       children: <Widget>[
         Card(
-          //Search Bar
+          //Search Bar Card
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          margin: EdgeInsets.only(bottom: 8),
+          margin: EdgeInsets.zero,
           color: Colors.white,
-          elevation: 2,
+          elevation: 0,
           child: Container(
+            //Search Bar Row
             padding: EdgeInsets.all(16),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
+                //Search Icon
                 Icon(
                   Icons.search,
                   color: Colors.deepOrange,
                   size: 16,
                 ),
+                //Search Text Field Expanded
                 Expanded(
                   child: Container(
-                    margin: EdgeInsets.fromLTRB(16, 0, 16, 2),
+                    margin: EdgeInsets.fromLTRB(16, 0, 16, 0),
                     child: TextField(
                       style: TextStyle(
                         color: Color.fromARGB(255, 15, 17, 16),
                         fontSize: 14,
                       ),
                       decoration: InputDecoration.collapsed(
-                        hintText: "Find a Restaurant",
+                        hintText:
+                            "Restaurants, dishes, categories, anything...",
                         hintStyle: TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 14,
@@ -147,6 +153,10 @@ class _HomeWidgetState extends State<HomeWidget> {
             ),
           ),
         ),
+        Divider(
+          color: Colors.grey,
+          height: 0,
+        ),
         //Restaurants ListView
         Expanded(
           child: ListView.builder(
@@ -157,136 +167,6 @@ class _HomeWidgetState extends State<HomeWidget> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class NearbyLocationListViewItem extends StatelessWidget {
-  @override
-  Widget build(BuildContext buildContext) {
-    return GestureDetector(
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-        margin: EdgeInsets.fromLTRB(6, 10, 6, 10),
-        child: Container(
-          width: 150,
-          child: Column(
-            children: <Widget>[
-              Container(
-                color: Colors.grey,
-                child: AspectRatio(
-                  aspectRatio: 1.5,
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned(
-                        child: Image.network(
-                          "https://www.theriverside.co.uk/images/Inside-Restaurant.jpg",
-                          width: 150,
-                          fit: BoxFit.fitWidth,
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        right: 2,
-                        child: IconButton(
-                          icon: Icon(Icons.bookmark),
-                          color: Colors.white,
-                          tooltip: "Bookmark",
-                          onPressed: () {
-                            print("bookmarked");
-                          },
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 4,
-                        left: 4,
-                        child: Card(
-                          color: Colors.white,
-                          shape: StadiumBorder(),
-                          child: Container(
-                            padding: EdgeInsets.all(5.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Icon(
-                                  Icons.star,
-                                  size: 10,
-                                  color: Colors.red,
-                                ),
-                                Container(
-                                  margin:
-                                      EdgeInsets.only(left: 1.0, right: 1.0),
-                                  child: Text(
-                                    "2.4",
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 8.0),
-                child: Text(
-                  "Madouk Cafe",
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 17, 15, 16),
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Container(
-                alignment: Alignment(0, 0),
-                padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
-                child: Text(
-                  "12 friends have been here",
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  alignment: Alignment(0, 0),
-                  child: Text(
-                    "0.5 kms away",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 10,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        elevation: 4.0,
-        clipBehavior: Clip.antiAlias,
-      ),
-      onTap: () {
-        Navigator.push(
-          buildContext,
-          MaterialPageRoute(
-            builder: (buildContext) {
-              return ViewLocationWidget();
-            },
-          ),
-        );
-      },
     );
   }
 }
