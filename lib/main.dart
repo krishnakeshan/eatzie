@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'welcome_screen.dart';
 import 'package:eatzie/custom_widgets/list_view_items/location_list_view_item.dart';
-import 'view_location.dart';
+import 'cart.dart';
 import 'orders_tab_widget.dart';
+import 'profile_tab_widget.dart';
 
 void main() => runApp(EatzieApp());
 
@@ -14,7 +16,7 @@ class EatzieApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.white,
       ),
-      home: HomePage(),
+      home: WelcomeScreenWidget(),
     );
   }
 }
@@ -35,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     HomeWidget(),
     OrdersTabWidget(),
     HomeWidget(),
-    HomeWidget(),
+    ProfileTabWidget(),
   ];
 
   @override
@@ -48,7 +50,17 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.shopping_cart),
             color: Colors.deepOrange,
             tooltip: "Cart(s)",
-            onPressed: () {},
+            onPressed: () {
+              //open cart widget
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (buildContext) {
+                    return CartWidget();
+                  },
+                ),
+              );
+            },
           )
         ],
         textTheme: TextTheme(
@@ -163,7 +175,7 @@ class _HomeWidgetState extends State<HomeWidget> {
             itemBuilder: (buildContext, index) {
               return LocationListViewItem();
             },
-            itemCount: 10,
+            itemCount: 5,
           ),
         ),
       ],
