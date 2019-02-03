@@ -35,6 +35,16 @@ end
 target 'Runner' do
   use_frameworks!
 
+  #Account Kit
+  pod 'AccountKit'
+
+  #Firebase
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
+
+  #Parse
+  pod 'Parse'
+
   # Prepare symlinks folder. We use symlinks to avoid having Podfile.lock
   # referring to absolute paths on developers' machines.
   system('rm -rf .symlinks')
