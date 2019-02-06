@@ -9,6 +9,7 @@ import Parse
 @objc class AppDelegate: FlutterAppDelegate {
     //MARK: Properties
     var flutterResults: [String : FlutterResult] = [:]
+    let databaseHelper = DatabaseHelper()
     var accountKit: AKFAccountKit! = nil
     
     //MARK: Methods
@@ -38,12 +39,24 @@ import Parse
         //set method call handler for main channel
         mainChannel.setMethodCallHandler { (flutterMethodCall, flutterResult) in
             //determine which method called and perform actions accordingly
+            //method to initiate login
             if flutterMethodCall.method == "initiateLogin" {
                 //set result object
                 self.flutterResults["accountKit"] = flutterResult
                 
                 //start Account Kit login flow
                 self.initiateLogin(rootViewController: viewController)
+            }
+            
+            //method to get locations for user
+            else if flutterMethodCall.method == "getLocations" {
+                self.databaseHelper.getLocations(flutterResult: flutterResult)
+            }
+            
+            //method to get items for a given location
+            else if flutterMethodCall.method == "getItemsForLocation" {
+                let locationId = flutterMethodCall.arguments as! String
+                self.databaseHelper.getItemsForLocation(locationId: locationId, flutterResult: flutterResult)
             }
         }
         GeneratedPluginRegistrant.register(with: self)
@@ -80,7 +93,6 @@ import Parse
         //get account kit parameters, to pass to cloud function
         accountKit.requestAccount { (accountKitAccount, error) in
             if error == nil && accountKitAccount != nil {
-                print("successfully verified number, calling cloud function")
                 //prepare params to call cloud function
                 let params = [
                     "accountKitId": accountKitAccount!.accountID,

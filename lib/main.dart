@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'welcome_screen.dart';
 import 'package:eatzie/custom_widgets/list_view_items/location_list_view_item.dart';
 import 'cart.dart';
 import 'orders_tab_widget.dart';
 import 'profile_tab_widget.dart';
+
+import 'model/location.dart';
 
 void main() => runApp(EatzieApp());
 
@@ -16,7 +21,7 @@ class EatzieApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.white,
       ),
-      home: WelcomeScreenWidget(),
+      home: HomePage(),
     );
   }
 }
@@ -118,6 +123,20 @@ class HomeWidget extends StatefulWidget {
 }
 
 class _HomeWidgetState extends State<HomeWidget> {
+  //Properties
+  static const platformChannel = const MethodChannel("com.qrilt.eatzie/main");
+  List<Location> locations = [];
+
+  //Methods
+  @override
+  void initState() {
+    print("inside init state");
+    super.initState();
+
+    //fetch locations near this user
+    getLocations();
+  }
+
   @override
   Widget build(BuildContext buildContext) {
     return Column(
@@ -173,12 +192,38 @@ class _HomeWidgetState extends State<HomeWidget> {
         Expanded(
           child: ListView.builder(
             itemBuilder: (buildContext, index) {
-              return LocationListViewItem();
+              return LocationListViewItem(
+                location: locations[index],
+              );
             },
-            itemCount: 5,
+            itemCount: locations.length,
           ),
         ),
       ],
     );
+  }
+
+  //method to get locations near this user
+  Future<void> getLocations() async {
+    //locations will be an array of LinkedHashMaps, each one being a Location Parse Object
+    var locations = await platformChannel.invokeMethod("getLocations");
+
+    //create location objects and push them onto locations array
+    List<Location> newLocationsArray = List();
+    for (var location in locations) {
+      Location newLocation = Location();
+      newLocation.setObjectId(location["objectId"]);
+      newLocation.setCreatedAt(location["createdAt"]);
+      newLocation.setImageURL(location["imageURL"]);
+      newLocation.setName(location["name"]);
+      newLocation.setAddress(location["address"]);
+      newLocationsArray.add(newLocation);
+    }
+
+    //set state of widget
+    setState(() {
+      this.locations.clear();
+      this.locations.addAll(newLocationsArray);
+    });
   }
 }

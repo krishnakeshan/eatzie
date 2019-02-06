@@ -2,18 +2,36 @@ import 'package:flutter/material.dart';
 
 import 'package:eatzie/view_location.dart';
 
+import 'package:eatzie/model/location.dart';
+
 class LocationListViewItem extends StatefulWidget {
+  //Properties
+  final Location location;
+
+  //Constructors
+  LocationListViewItem({this.location});
+
+  //Methods
   @override
   _LocationListViewItemState createState() {
-    return new _LocationListViewItemState();
+    return new _LocationListViewItemState(location: location);
   }
 }
 
 class _LocationListViewItemState extends State<LocationListViewItem> {
+  //Properties
+  Location location;
+
+  //Constructors
+  _LocationListViewItemState({this.location});
+
+  //Methods
   @override
   Widget build(BuildContext buildContext) {
     return GestureDetector(
+      //Gesture Detector to Detect Taps on Main Container
       child: Container(
+        //Main Container to give padding of 16
         padding: EdgeInsets.all(16),
         margin: EdgeInsets.only(bottom: 2),
         color: Colors.white,
@@ -30,7 +48,8 @@ class _LocationListViewItemState extends State<LocationListViewItem> {
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: Image.network(
-                  "https://cdn.pixabay.com/photo/2015/09/02/12/43/meal-918639_960_720.jpg",
+                  //Image View for Restaurant Image
+                  location.getImageURL(),
                   fit: BoxFit.cover,
                   height: 50,
                   width: 50,
@@ -43,7 +62,7 @@ class _LocationListViewItemState extends State<LocationListViewItem> {
                 children: <Widget>[
                   //Name Text Widget
                   Text(
-                    "Madouk Cafe",
+                    location.getName(),
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -125,7 +144,9 @@ class _LocationListViewItemState extends State<LocationListViewItem> {
           buildContext,
           MaterialPageRoute(
             builder: (buildContext) {
-              return ViewLocationWidget();
+              return ViewLocationWidget(
+                location: location,
+              );
             },
           ),
         );

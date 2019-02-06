@@ -1,87 +1,43 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'custom_widgets/card_image_view.dart';
 import 'custom_widgets/list_view_items/location_menu_item.dart';
 
+import 'package:eatzie/model/location.dart';
+import 'package:eatzie/model/item.dart';
+
 class ViewLocationWidget extends StatefulWidget {
+  //Properties
+  final Location location;
+
+  //Constructors
+  ViewLocationWidget({this.location});
+
+  //Methods
   @override
-  _ViewLocationWidgetState createState() => _ViewLocationWidgetState();
+  _ViewLocationWidgetState createState() =>
+      _ViewLocationWidgetState(location: location);
 }
 
 class _ViewLocationWidgetState extends State<ViewLocationWidget>
     with SingleTickerProviderStateMixin {
   //Properties
+  Location location;
+  List<Item> items = List();
   bool isBookmarked = false;
   TabController _tabController;
 
+  static const platformChannel = MethodChannel("com.qrilt.eatzie/main");
+
+  //Constructors
+  _ViewLocationWidgetState({this.location});
+
   //Mutable Widgets
   Icon bookmarkIcon;
-
-  //Inner Widgets
-  //Menu Tab View
-  Widget menuTabView = Builder(builder: (buildContext) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          //Search Bar Card
-          Card(
-            elevation: 4,
-            margin: EdgeInsets.fromLTRB(12, 12, 12, 12),
-            shape: StadiumBorder(),
-            color: Colors.white,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                vertical: 10,
-                horizontal: 10,
-              ),
-              //Search Bar Inner Row
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  //Search Icon
-                  Icon(
-                    Icons.search,
-                    color: Colors.deepOrange,
-                    size: 16,
-                  ),
-                  //Search Text Field
-                  Expanded(
-                    child: Container(
-                      margin: EdgeInsets.only(left: 12),
-                      child: TextField(
-                        decoration: InputDecoration.collapsed(
-                          hintText: "Search dishes, categories, etc.",
-                          hintStyle: TextStyle(
-                            fontSize: 14,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          //Items List View
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: 20,
-              itemBuilder: (buildContext, index) {
-                return LocationMenuListViewItem();
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  });
 
   //Photos Tab View
   Widget photosTab = CustomScrollView(
@@ -96,6 +52,7 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
       )
     ],
   );
+
   Widget photosTabView = ListView(
     padding: EdgeInsets.only(top: 10),
     children: <Widget>[
@@ -114,7 +71,12 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
   @override
   void initState() {
     super.initState();
+
+    //initialize tab controller
     _tabController = TabController(length: 4, vsync: this);
+
+    //get items for this location
+    _getItems();
   }
 
   @override
@@ -170,7 +132,7 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
                           children: <Widget>[
                             Expanded(
                               child: Text(
-                                "Madouk Cafe",
+                                location.getName(),
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 20,
@@ -309,7 +271,7 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
             child: TabBarView(
               controller: _tabController,
               children: <Widget>[
-                menuTabView,
+                getMenuTabView(),
                 photosTabView,
                 Text("Third"),
                 Text("Fourth"),
@@ -319,6 +281,101 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
         ),
       ),
     );
+  }
+
+//method to get Menu Tab View
+  Widget getMenuTabView() {
+    return Builder(builder: (buildContext) {
+      return Container(
+        child: Column(
+          children: <Widget>[
+            //Search Bar Card
+            Card(
+              elevation: 4,
+              margin: EdgeInsets.fromLTRB(12, 12, 12, 12),
+              shape: StadiumBorder(),
+              color: Colors.white,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 10,
+                ),
+                //Search Bar Inner Row
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    //Search Icon
+                    Icon(
+                      Icons.search,
+                      color: Colors.deepOrange,
+                      size: 16,
+                    ),
+                    //Search Text Field
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 12),
+                        child: TextField(
+                          decoration: InputDecoration.collapsed(
+                            hintText: "Search dishes, categories, etc.",
+                            hintStyle: TextStyle(
+                              fontSize: 14,
+                              color: Colors.blueGrey,
+                            ),
+                          ),
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            //Items List View
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.zero,
+                itemBuilder: (buildContext, index) {
+                  return LocationMenuListViewItem(
+                    item: items[index],
+                  );
+                },
+                itemCount: items.length,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  //method to get items for this location
+  Future<void> _getItems() async {
+    print("inside getItems");
+    //'items' will be a list of LinkedHashMaps each repre. a Item Parse Object
+    var items = await platformChannel.invokeMethod(
+        "getItemsForLocation", location.getObjectId());
+
+    //for each item LinkedHashMap create an Item object
+    List<Item> newItems = List();
+    for (var item in items) {
+      Item newItem = Item();
+      newItem.objectId = item["objectId"];
+      newItem.setCreatedAt(item["createdAt"]);
+      newItem.imageURL = item["imageURL"];
+      newItem.name = item["name"];
+      newItem.description = item["description"];
+      newItem.ppu = item["ppu"].toDouble();
+      newItems.add(newItem);
+    }
+
+    //call setState
+    setState(() {
+      this.items.clear();
+      this.items.addAll(newItems);
+    });
   }
 }
 

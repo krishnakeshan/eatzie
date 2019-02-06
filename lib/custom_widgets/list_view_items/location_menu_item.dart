@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:eatzie/model/location_menu_item_data.dart';
+import 'package:eatzie/model/location.dart';
+import 'package:eatzie/model/item.dart';
 
 class LocationMenuListViewItem extends StatefulWidget {
   //Properties
-  final LocationMenuListViewItem data;
+  final Item item;
 
   //Constructors
-  LocationMenuListViewItem({this.data});
+  LocationMenuListViewItem({this.item});
 
+  //Methods
   @override
   State<LocationMenuListViewItem> createState() =>
-      _LocationMenuListViewItemState();
+      _LocationMenuListViewItemState(item: item);
 }
 
 class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
   //Properties
-  LocationMenuItemData itemData;
+  Location location;
+  Item item;
 
   //Constructors
-  _LocationMenuListViewItemState({this.itemData});
+  _LocationMenuListViewItemState({this.location, this.item});
 
   //Methods
   @override
@@ -51,7 +54,7 @@ class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
               children: <Widget>[
                 //Name Text Widget
                 Text(
-                  "Croissant",
+                  item.name,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
@@ -62,7 +65,7 @@ class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
                 Container(
                   margin: EdgeInsets.only(top: 6),
                   child: Text(
-                    "bread filled with cream",
+                    item.description,
                     style: TextStyle(
                       color: Colors.blueGrey,
                       fontSize: 12,
@@ -77,7 +80,7 @@ class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        "Rs. 40",
+                        "Rs. ${item.ppu}",
                         style: TextStyle(
                           color: Colors.deepOrange,
                           fontSize: 11,
