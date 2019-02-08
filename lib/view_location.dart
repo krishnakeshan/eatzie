@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'custom_widgets/card_image_view.dart';
 import 'custom_widgets/list_view_items/location_menu_item.dart';
 
+import 'package:eatzie/classes/listeners/cart_listener.dart';
 import 'package:eatzie/model/location.dart';
 import 'package:eatzie/model/item.dart';
 
@@ -24,14 +25,17 @@ class ViewLocationWidget extends StatefulWidget {
 }
 
 class _ViewLocationWidgetState extends State<ViewLocationWidget>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin
+    implements CartListener {
   //Properties
   Location location;
   List<Item> items = List();
+  bool cartExists = false;
   bool isBookmarked = false;
   TabController _tabController;
 
   static const platformChannel = MethodChannel("com.qrilt.eatzie/main");
+  static const cartPlatformChannel = MethodChannel("com.qrilt.eatzie/cart");
 
   //Constructors
   _ViewLocationWidgetState({this.location});
@@ -77,6 +81,9 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
 
     //get items for this location
     _getItems();
+
+    //determine if cart exists for this location
+    _doesCartExist();
   }
 
   @override
@@ -185,7 +192,7 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
                         child: Row(
                           children: <Widget>[
                             Text(
-                              "Tea, and Biscuits",
+                              location.getDescription(),
                               style: TextStyle(
                                 color: Colors.grey,
                               ),
@@ -266,17 +273,69 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
               ),
             ];
           },
-          body: Container(
-            //TabBarView
-            child: TabBarView(
-              controller: _tabController,
-              children: <Widget>[
-                getMenuTabView(),
-                photosTabView,
-                Text("Third"),
-                Text("Fourth"),
-              ],
-            ),
+          body: Column(
+            //Body Column View
+            children: <Widget>[
+              Expanded(
+                //Expanded for Tab Bar View to cover all space other than Cart Button
+                child: TabBarView(
+                  //Tab Bar View
+                  controller: _tabController,
+                  children: <Widget>[
+                    getMenuTabView(),
+                    photosTabView,
+                    Text("Third"),
+                    Text("Fourth"),
+                  ],
+                ),
+              ),
+              Visibility(
+                visible: cartExists,
+                child: InkWell(
+                  //InkWell to process touches on Cart Button
+                  splashColor: Colors.white,
+                  child: Ink(
+                    //Ink used to give background and padding instead of Container since parent is InkWell
+                    color: Colors.green,
+                    padding: EdgeInsets.all(16),
+                    child: Row(
+                      //Main Row Containing Icons and Text
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Icon(
+                          //Shopping Cart Icon
+                          Icons.shopping_cart,
+                          color: Colors.white70,
+                        ),
+                        Expanded(
+                          //Expanded to Make Title Expand
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              //View Cart Text
+                              "View Cart",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          //Forward Arrow Icon
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () {
+                    print("viewing cart");
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -340,6 +399,7 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
                 itemBuilder: (buildContext, index) {
                   return LocationMenuListViewItem(
                     item: items[index],
+                    cartListener: this,
                   );
                 },
                 itemCount: items.length,
@@ -353,7 +413,6 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
 
   //method to get items for this location
   Future<void> _getItems() async {
-    print("inside getItems");
     //'items' will be a list of LinkedHashMaps each repre. a Item Parse Object
     var items = await platformChannel.invokeMethod(
         "getItemsForLocation", location.getObjectId());
@@ -377,281 +436,26 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
       this.items.addAll(newItems);
     });
   }
+
+  //method to check if a cart exists for this location
+  Future<void> _doesCartExist() async {
+    bool cartExists = await cartPlatformChannel.invokeMethod(
+        "doesCartExist", location.getObjectId());
+
+    setState(() {
+      this.cartExists = cartExists;
+    });
+  }
+
+  //cart listener methods
+  //method for when an item is added to a cart
+  void onItemAddedToCart(Item item) {
+    //call platform channel method
+    platformChannel.invokeMethod("addItemToCart", item.objectId);
+
+    //set state to show "View Cart" button
+    setState(() {
+      cartExists = true;
+    });
+  }
 }
-
-// class _ViewLocationWidgetState extends State<ViewLocationWidget>
-//     with SingleTickerProviderStateMixin {
-//   //Properties
-//   bool isBookmarked = false;
-//   TabController _tabController;
-
-//   //Mutable Widgets
-//   Icon bookmarkIcon;
-
-//   //Inner Widgets
-//   //Menu Tab View
-//   Widget menuTabView = Container(
-//     child: Column(
-//       children: <Widget>[
-//         Card(
-//           elevation: 4,
-//           margin: EdgeInsets.fromLTRB(12, 16, 12, 0),
-//           shape: StadiumBorder(),
-//           color: Colors.white,
-//           child: Container(
-//             padding: EdgeInsets.symmetric(
-//               vertical: 10,
-//               horizontal: 10,
-//             ),
-//             child: Row(
-//               crossAxisAlignment: CrossAxisAlignment.center,
-//               children: <Widget>[
-//                 Icon(
-//                   Icons.search,
-//                   color: Colors.deepOrange,
-//                   size: 16,
-//                 ),
-//                 Expanded(
-//                   child: Container(
-//                     margin: EdgeInsets.only(left: 12),
-//                     child: TextField(
-//                       decoration: InputDecoration.collapsed(
-//                         hintText: "Search dishes, categories, etc.",
-//                         hintStyle: TextStyle(
-//                           fontSize: 14,
-//                           color: Colors.blueGrey,
-//                         ),
-//                       ),
-//                       style: TextStyle(
-//                         color: Colors.black,
-//                         fontSize: 14,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ],
-//     ),
-//   );
-
-//   //Photos Tab View
-//   Widget photosTabView = ListView(
-//     padding: EdgeInsets.only(top: 10),
-//     children: <Widget>[
-//       CardImageView(
-//         source:
-//             "https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_960_720.jpg",
-//       ),
-//       Container(
-//         margin: EdgeInsets.fromLTRB(15, 0, 15, 10),
-//         child: Card(
-//           elevation: 4,
-//           color: Colors.grey,
-//           margin: EdgeInsets.zero,
-//           shape: RoundedRectangleBorder(
-//             borderRadius: BorderRadius.circular(10),
-//           ),
-//           child: Image.network(
-//             "https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_960_720.jpg",
-//             fit: BoxFit.fitWidth,
-//           ),
-//           clipBehavior: Clip.antiAlias,
-//         ),
-//       ),
-//     ],
-//   );
-
-//   //Methods
-//   @override
-//   void initState() {
-//     super.initState();
-//     _tabController = TabController(length: 4, vsync: this);
-//   }
-
-//   @override
-//   void dispose() {
-//     _tabController.dispose();
-//     super.dispose();
-//   }
-
-//   @override
-//   Widget build(BuildContext buildContext) {
-//     //decide widget states
-//     if (isBookmarked) {
-//       bookmarkIcon = Icon(
-//         Icons.bookmark,
-//         color: Colors.deepOrange,
-//       );
-//     } else {
-//       bookmarkIcon = Icon(
-//         Icons.bookmark_border,
-//       );
-//     }
-//     return Scaffold(
-//       body: ListView(
-//         children: <Widget>[
-//           //Header. Contains: Close, Name and Bookmark, Rating
-//           Card(
-//             margin: EdgeInsets.zero,
-//             elevation: 2,
-//             shape: Border(),
-//             color: Colors.white,
-//             child: Column(
-//               children: <Widget>[
-//                 //Close / Back Button
-//                 Container(
-//                   child: Align(
-//                     child: IconButton(
-//                       icon: Icon(Icons.arrow_back),
-//                       onPressed: () {
-//                         Navigator.pop(buildContext);
-//                       },
-//                     ),
-//                     alignment: Alignment.centerLeft,
-//                   ),
-//                 ),
-//                 //Name and Bookmark Row
-//                 Container(
-//                   padding: EdgeInsets.fromLTRB(20, 0, 10, 0),
-//                   child: Row(
-//                     children: <Widget>[
-//                       Expanded(
-//                         child: Text(
-//                           "Madouk Cafe",
-//                           style: TextStyle(
-//                             color: Colors.black,
-//                             fontSize: 20,
-//                             fontWeight: FontWeight.bold,
-//                           ),
-//                         ),
-//                       ),
-//                       //Bookmark Button
-//                       AnimatedCrossFade(
-//                         duration: Duration(milliseconds: 500),
-//                         firstChild: IconButton(
-//                           icon: Icon(Icons.bookmark),
-//                           color: Color.fromARGB(255, 252, 100, 100),
-//                           iconSize: 28,
-//                           tooltip: "Bookmarked!",
-//                           onPressed: () {
-//                             setState(() {
-//                               isBookmarked = !isBookmarked;
-//                             });
-//                           },
-//                         ),
-//                         secondChild: IconButton(
-//                           icon: Icon(Icons.bookmark_border),
-//                           color: Color.fromARGB(255, 252, 100, 100),
-//                           iconSize: 28,
-//                           tooltip: "Bookmark this location",
-//                           onPressed: () {
-//                             setState(() {
-//                               isBookmarked = !isBookmarked;
-//                             });
-//                           },
-//                         ),
-//                         crossFadeState: isBookmarked
-//                             ? CrossFadeState.showFirst
-//                             : CrossFadeState.showSecond,
-//                       ),
-//                       //Call Button
-//                       IconButton(
-//                         icon: Icon(Icons.call),
-//                         color: Color.fromARGB(255, 252, 100, 100),
-//                         tooltip: "Call",
-//                         onPressed: () {},
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//                 //About Row
-//                 Container(
-//                   padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-//                   child: Row(
-//                     children: <Widget>[
-//                       Text(
-//                         "Seafood, Tea, and Biscuits",
-//                         style: TextStyle(
-//                           color: Colors.grey,
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//                 //Rating Row
-//                 Container(
-//                   padding: EdgeInsets.fromLTRB(20, 10, 20, 12),
-//                   child: Row(
-//                     crossAxisAlignment: CrossAxisAlignment.center,
-//                     children: <Widget>[
-//                       //Rating Text
-//                       Container(
-//                         margin: EdgeInsets.only(right: 4.0),
-//                         child: Text(
-//                           "4.3",
-//                           style: TextStyle(
-//                             color: Color.fromARGB(255, 252, 100, 100),
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 16,
-//                           ),
-//                         ),
-//                       ),
-//                       //Rating Star
-//                       Container(
-//                         child: Icon(
-//                           FontAwesomeIcons.solidStar,
-//                           size: 14,
-//                           color: Color.fromARGB(255, 252, 100, 100),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//           //TabBar
-//           TabBar(
-//             isScrollable: false,
-//             controller: _tabController,
-//             indicatorColor: Colors.deepOrange,
-//             indicatorWeight: 2.5,
-//             labelColor: Color.fromARGB(255, 252, 100, 100),
-//             unselectedLabelColor: Colors.blueGrey,
-//             tabs: <Widget>[
-//               Tab(
-//                 text: "Menu",
-//               ),
-//               Tab(
-//                 text: "Photos",
-//               ),
-//               Tab(
-//                 text: "Map",
-//               ),
-//               Tab(
-//                 text: "Contact",
-//               ),
-//             ],
-//           ),
-//           //TabBarView
-//           Container(
-//             height: MediaQuery.of(buildContext).size.height,
-//             child: TabBarView(
-//               controller: _tabController,
-//               children: <Widget>[
-//                 menuTabView,
-//                 photosTabView,
-//                 Text("Third"),
-//                 Text("Fourth"),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//       backgroundColor: Colors.white,
-//     );
-//   }
-// }

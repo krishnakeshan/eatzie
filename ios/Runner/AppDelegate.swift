@@ -10,6 +10,7 @@ import Parse
     //MARK: Properties
     var flutterResults: [String : FlutterResult] = [:]
     let databaseHelper = DatabaseHelper()
+    var cartHelper = CartHelper()
     var accountKit: AKFAccountKit! = nil
     
     //MARK: Methods
@@ -34,6 +35,7 @@ import Parse
         
         //declare channels
         let mainChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/main", binaryMessenger: viewController)
+        let cartChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/cart", binaryMessenger: viewController)
         
         //set method call handlers
         //set method call handler for main channel
@@ -58,7 +60,47 @@ import Parse
                 let locationId = flutterMethodCall.arguments as! String
                 self.databaseHelper.getItemsForLocation(locationId: locationId, flutterResult: flutterResult)
             }
+            
+            //method to get Cart object for a given location
+            else if flutterMethodCall.method == "getCartForLocation" {
+                let locationId = flutterMethodCall.arguments as! String
+                self.databaseHelper.getCartForLocation(locationId: locationId, flutterResult: flutterResult)
+            }
+                
+                //method to get Location object from server
+            else if flutterMethodCall.method == "getLocationObject" {
+                let locationId = flutterMethodCall.arguments as! String
+                self.databaseHelper.getLocationObject(locationId: locationId, flutterResult: flutterResult)
+            }
+                
+            //method to get Item object from server
+            else if flutterMethodCall.method == "getItemObject" {
+                let itemId = flutterMethodCall.arguments as! String
+                self.databaseHelper.getItemObject(itemId: itemId, flutterResult: flutterResult)
+            }
         }
+        
+        //set method call handler for cart channel
+        cartChannel.setMethodCallHandler { (flutterMethodCall, flutterResult) in
+            //method to get all cart objects for this user
+            if flutterMethodCall.method == "getUserCartObjects" {
+                self.cartHelper.getUserCartObjects(flutterResult: flutterResult)
+            }
+                
+            //method to add an item to the cart
+            else if flutterMethodCall.method == "addItemToCart" {
+                let itemId = flutterMethodCall.arguments as! String
+                self.cartHelper.addItemToCart(itemId: itemId, flutterResult: flutterResult);
+            }
+            
+            //method to check if a cart exists for a given location
+            else if flutterMethodCall.method == "doesCartExist" {
+                let locationId = flutterMethodCall.arguments as! String
+                self.cartHelper.doesCartExist(locationId: locationId, flutterResult: flutterResult)
+            }
+        }
+        
+        //register plugin registrant?
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }

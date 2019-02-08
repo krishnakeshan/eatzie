@@ -72,7 +72,7 @@ class _LocationListViewItemState extends State<LocationListViewItem> {
                   Container(
                     margin: EdgeInsets.only(top: 6),
                     child: Text(
-                      "Tea, Coffee, and Shawarma",
+                      location.getDescription(),
                       style: TextStyle(
                         color: Colors.blueGrey,
                         fontSize: 11,

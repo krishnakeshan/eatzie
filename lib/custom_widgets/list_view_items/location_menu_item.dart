@@ -1,32 +1,42 @@
 import 'package:flutter/material.dart';
+
+import 'package:eatzie/classes/listeners/cart_listener.dart';
 import 'package:eatzie/model/location.dart';
 import 'package:eatzie/model/item.dart';
 
 class LocationMenuListViewItem extends StatefulWidget {
   //Properties
   final Item item;
+  final Location location;
+  final CartListener cartListener;
 
   //Constructors
-  LocationMenuListViewItem({this.item});
+  LocationMenuListViewItem({this.item, this.location, this.cartListener});
 
   //Methods
   @override
   State<LocationMenuListViewItem> createState() =>
-      _LocationMenuListViewItemState(item: item);
+      _LocationMenuListViewItemState(
+        item: item,
+        location: location,
+        cartListener: cartListener,
+      );
 }
 
 class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
   //Properties
   Location location;
   Item item;
+  CartListener cartListener;
 
   //Constructors
-  _LocationMenuListViewItemState({this.location, this.item});
+  _LocationMenuListViewItemState({this.item, this.location, this.cartListener});
 
   //Methods
   @override
   Widget build(BuildContext buildContext) {
     return Container(
+      //Main Container to give everything a padding of 16
       padding: EdgeInsets.all(16),
       margin: EdgeInsets.only(bottom: 1),
       color: Colors.white,
@@ -40,7 +50,7 @@ class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
               color: Colors.grey,
               clipBehavior: Clip.antiAlias,
               child: Image.network(
-                "https://cdn.pixabay.com/photo/2015/04/08/13/13/food-712665_960_720.jpg",
+                item.imageURL,
                 fit: BoxFit.cover,
                 height: 50,
                 width: 50,
@@ -111,9 +121,11 @@ class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
             ),
           ),
           Container(
+            //Add To Cart Button Container
             width: 70,
             height: 30,
             child: RaisedButton(
+              //Add to Cart Button
               child: Text(
                 "Add",
                 style: TextStyle(
@@ -122,7 +134,12 @@ class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
                 ),
               ),
               color: Colors.white,
-              onPressed: () {},
+              onPressed: () {
+                //call method to add an item to the cart
+                if (this.cartListener != null) {
+                  this.cartListener.onItemAddedToCart(item);
+                }
+              },
             ),
           ),
         ],

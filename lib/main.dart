@@ -216,6 +216,7 @@ class _HomeWidgetState extends State<HomeWidget> {
       newLocation.setCreatedAt(location["createdAt"]);
       newLocation.setImageURL(location["imageURL"]);
       newLocation.setName(location["name"]);
+      newLocation.setDescription(location["description"]);
       newLocation.setAddress(location["address"]);
       newLocationsArray.add(newLocation);
     }

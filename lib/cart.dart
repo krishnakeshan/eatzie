@@ -1,4 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'package:eatzie/model/item.dart';
+import 'package:eatzie/model/location.dart';
+import 'package:eatzie/model/cart.dart';
 
 class CartWidget extends StatefulWidget {
   @override
@@ -8,18 +15,168 @@ class CartWidget extends StatefulWidget {
 }
 
 class _CartWidgetState extends State<CartWidget> {
+  //Properties
+  List<Cart> cartObjects;
+
+  static const cartPlatformChannel = MethodChannel("com.qrilt.eatzie/cart");
+
+  //Methods
+  @override
+  void initState() {
+    super.initState();
+
+    //get cart objects for this user
+    _getUserCartObjects();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Cart"),
       ),
-      body: ViewCartWidget(),
+      body: _getBody(),
+    );
+  }
+
+  //method to get body for this screen based on how many carts exist
+  Widget _getBody() {
+    //if cartObjects is null, return a loading screen
+    if (cartObjects == null) {
+      Widget loadingWidget = Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            CircularProgressIndicator(
+              value: null,
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 36),
+              child: Text(
+                "Loading Carts, One Moment...",
+                style: TextStyle(
+                  color: Colors.blueGrey,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      return loadingWidget;
+    }
+
+    //return a "No Carts" widget if cartObjects != null and no carts are there
+    else if (cartObjects.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(
+              Icons.shopping_cart,
+              color: Colors.blueGrey,
+              size: 36,
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 36),
+              child: Text(
+                "You haven't created any carts...",
+                style: TextStyle(
+                  color: Colors.blueGrey,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    //return a single cart view if there's only one cart
+    else if (cartObjects.length == 1) {
+      return ViewCartWidget(
+        cartObject: cartObjects.first,
+      );
+    }
+
+    //return a list of carts if more than one carts
+    else {
+      Widget cartsList = ListView.builder(
+        itemBuilder: (buildContext, index) {
+          //return a widget
+          CartLocationListViewItem(
+            cart: cartObjects[index],
+          );
+        },
+        itemCount: cartObjects.length,
+      );
+
+      return cartsList;
+    }
+  }
+
+  //method to get the cart objects for this user
+  Future<void> _getUserCartObjects() async {
+    var cartObjects =
+        await cartPlatformChannel.invokeMethod("getUserCartObjects");
+
+    //initialize cartObjects since search finished
+    setState(() {
+      this.cartObjects = List();
+    });
+
+    //if cartObjects were found, initialize them and load into array
+    if (cartObjects.isNotEmpty) {
+      List<Cart> tempArray = new List();
+      for (var cartObject in cartObjects) {
+        var newCartObject = Cart.fromMap(map: cartObject);
+        tempArray.add(newCartObject);
+      }
+
+      //call setState
+      setState(() {
+        this.cartObjects.clear();
+        this.cartObjects.addAll(tempArray);
+      });
+    }
+  }
+}
+
+class CartLocationListViewItem extends StatefulWidget {
+  //Properties
+  final Cart cart;
+
+  //Constructors
+  CartLocationListViewItem({this.cart});
+
+  //Methods
+  @override
+  _CartLocationListViewItemState createState() {
+    return _CartLocationListViewItemState(
+      cart: this.cart,
     );
   }
 }
 
-class CartLocationListViewItem extends StatelessWidget {
+class _CartLocationListViewItemState extends State<CartLocationListViewItem> {
+  //Properties
+  Cart cart;
+  Location location = Location();
+  var platformChannel = MethodChannel("com.qrilt.eatzie/main");
+
+  //Constructors
+  _CartLocationListViewItemState({this.cart});
+
+  //Methods
+  @override
+  void initState() {
+    super.initState();
+
+    //get location object
+    _getLocationObject();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -40,7 +197,7 @@ class CartLocationListViewItem extends StatelessWidget {
                   //ClipOval to make image rounded
                   child: Image.network(
                     //Location Image
-                    "https://cdn.pixabay.com/photo/2015/09/02/13/24/girl-919048_960_720.jpg",
+                    location.getImageURL(),
                     height: 45,
                     width: 45,
                     fit: BoxFit.cover,
@@ -52,7 +209,7 @@ class CartLocationListViewItem extends StatelessWidget {
                     //Container for Location Name Text
                     margin: EdgeInsets.only(left: 12, right: 12),
                     child: Text(
-                      "Madouk Cafe",
+                      location.getName(),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -69,7 +226,7 @@ class CartLocationListViewItem extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "4 items",
+                  "${cart.cartItems.length} items",
                   style: TextStyle(
                     color: Colors.blueGrey,
                     fontWeight: FontWeight.w500,
@@ -153,16 +310,51 @@ class CartLocationListViewItem extends StatelessWidget {
       ),
     );
   }
+
+  //method to get the corresponding location for this cart
+  void _getLocationObject() async {
+    var location = await platformChannel.invokeMethod(
+        "getLocationObject", cart.locationId);
+
+    //call setState
+    setState(() {
+      this.location = location;
+    });
+  }
 }
 
 class ViewCartWidget extends StatefulWidget {
+  //Properties
+  final Cart cartObject;
+
+  //Constructors
+  ViewCartWidget({this.cartObject});
+
+  //Methods
   @override
   _ViewCartWidgetState createState() {
-    return _ViewCartWidgetState();
+    return _ViewCartWidgetState(cart: this.cartObject);
   }
 }
 
 class _ViewCartWidgetState extends State<ViewCartWidget> {
+  //Properties
+  Cart cart;
+  Location location = Location();
+  var platformChannel = MethodChannel("com.qrilt.eatzie/main");
+
+  //Constructors
+  _ViewCartWidgetState({this.cart});
+
+  //Methods
+  @override
+  void initState() {
+    super.initState();
+
+    //get location object
+    _getLocationObject();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -171,7 +363,7 @@ class _ViewCartWidgetState extends State<ViewCartWidget> {
       children: <Widget>[
         Text(
           //Location Name Text
-          "Madouk Cafe",
+          location.getName() != null ? location.getName() : "",
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -182,7 +374,7 @@ class _ViewCartWidgetState extends State<ViewCartWidget> {
           margin: EdgeInsets.only(top: 4),
           child: Text(
             //Location Address Text
-            "Somewhere nearby, Bangalore 45",
+            location.getAddress() != null ? location.getAddress() : "",
             style: TextStyle(
               color: Colors.grey,
             ),
@@ -218,9 +410,7 @@ class _ViewCartWidgetState extends State<ViewCartWidget> {
             ],
           ),
         ),
-        CartItemListViewItem(),
-        CartItemListViewItem(),
-        CartItemListViewItem(),
+        _getCartItemsWidget(),
         Divider(),
         Container(
           //Order Total Title Container for top margin
@@ -236,7 +426,7 @@ class _ViewCartWidgetState extends State<ViewCartWidget> {
           ),
         ),
         Text(
-          "Rs. 540",
+          _getCartTotal() != null ? "Rs. ${_getCartTotal()}" : "...",
           style: TextStyle(
             color: Colors.deepOrange,
             fontSize: 18,
@@ -246,16 +436,84 @@ class _ViewCartWidgetState extends State<ViewCartWidget> {
       ],
     );
   }
+
+  //method to get the list of CartItemListViewItems
+  Widget _getCartItemsWidget() {
+    List<Widget> cartItemsList = List();
+    for (var cartItem in cart.cartItems) {
+      cartItemsList.add(
+        CartItemListViewItem(
+          cartItem: cartItem,
+        ),
+      );
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: cartItemsList,
+    );
+  }
+
+  //method to get location object for this cart
+  Future<void> _getLocationObject() async {
+    var locationObject = await platformChannel.invokeMethod(
+        "getLocationObject", cart.locationId);
+
+    //call setState
+    setState(() {
+      location = Location.fromMap(map: locationObject);
+    });
+  }
+
+  //method to get total for this cart
+  double _getCartTotal() {
+    double total = 0;
+    for (var cartItem in cart.cartItems) {
+      //if any cartItems's Item's ppu is null, return null because total cannot be computed
+      if (cartItem.item.ppu == null) {
+        return null;
+      }
+
+      //this cartItem's Item's ppu is available, add it to the total
+      else {
+        total += (cartItem.quantity * cartItem.item.ppu);
+      }
+    }
+
+    //if reached till here, total has been computed, return it
+    return total;
+  }
 }
 
 class CartItemListViewItem extends StatefulWidget {
+  //Properties
+  final CartItem cartItem;
+
+  //Constructors
+  CartItemListViewItem({this.cartItem});
   @override
   _CartItemListViewItemState createState() {
-    return _CartItemListViewItemState();
+    return _CartItemListViewItemState(cartItem: this.cartItem);
   }
 }
 
 class _CartItemListViewItemState extends State<CartItemListViewItem> {
+  //Properties
+  CartItem cartItem;
+  var platformChannel = MethodChannel("com.qrilt.eatzie/main");
+
+  //Constructors
+  _CartItemListViewItemState({this.cartItem});
+
+  //Methods
+  @override
+  void initState() {
+    super.initState();
+
+    //get item information
+    _getItemInformation();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -273,7 +531,9 @@ class _CartItemListViewItemState extends State<CartItemListViewItem> {
                   //ClipOval to make image rounded
                   child: Image.network(
                     //Order Item Image
-                    "https://cdn.pixabay.com/photo/2015/04/08/13/13/food-712665_960_720.jpg",
+                    cartItem.item.imageURL != null
+                        ? cartItem.item.imageURL
+                        : "",
                     height: 40,
                     width: 40,
                     fit: BoxFit.cover,
@@ -289,7 +549,7 @@ class _CartItemListViewItemState extends State<CartItemListViewItem> {
                       children: <Widget>[
                         Text(
                           //Item Name Text
-                          "Croissant",
+                          cartItem.item.name != null ? cartItem.item.name : "",
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 14,
@@ -300,7 +560,9 @@ class _CartItemListViewItemState extends State<CartItemListViewItem> {
                           margin: EdgeInsets.only(top: 4),
                           child: Text(
                             //Item Price Text
-                            "Rs. 60",
+                            cartItem.item.ppu != null
+                                ? "Rs. ${cartItem.item.ppu}"
+                                : "",
                             style: TextStyle(
                               color: Colors.blueGrey,
                               fontSize: 12,
@@ -311,7 +573,9 @@ class _CartItemListViewItemState extends State<CartItemListViewItem> {
                         Container(
                           child: Text(
                             //Item Total Text
-                            "Total: Rs. 180",
+                            _getItemTotal() != null
+                                ? "Sub-Total: Rs. ${_getItemTotal()}"
+                                : "",
                             style: TextStyle(
                               color: Colors.deepOrange,
                               fontSize: 12,
@@ -345,7 +609,7 @@ class _CartItemListViewItemState extends State<CartItemListViewItem> {
                       margin: EdgeInsets.symmetric(horizontal: 4),
                       child: Text(
                         //Item Quantity Text
-                        "3",
+                        "${cartItem.quantity}",
                         style: TextStyle(
                           color: Colors.deepOrange,
                           fontSize: 14,
@@ -373,5 +637,25 @@ class _CartItemListViewItemState extends State<CartItemListViewItem> {
         ),
       ),
     );
+  }
+
+  //method to get item information for this CartItem
+  Future<void> _getItemInformation() async {
+    var itemObject = await platformChannel.invokeMethod(
+        "getItemObject", cartItem.item.objectId);
+
+    //load information into this cartItem
+    setState(() {
+      this.cartItem.item = Item.fromMap(map: itemObject);
+    });
+  }
+
+  //method to get total for this cart
+  double _getItemTotal() {
+    if (cartItem.item.ppu != null) {
+      return cartItem.quantity * cartItem.item.ppu;
+    }
+
+    return null;
   }
 }
