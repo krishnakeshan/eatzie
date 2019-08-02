@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
-		2D5378261FAA1A9400D5DBA9 /* flutter_assets in Resources */ = {isa = PBXBuildFile; fileRef = 2D5378251FAA1A9400D5DBA9 /* flutter_assets */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		3B80C3941E831B6300D905FE /* App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; };
 		3B80C3951E831B6300D905FE /* App.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -43,7 +42,7 @@
 /* Begin PBXFileReference section */
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
-		2D5378251FAA1A9400D5DBA9 /* flutter_assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = flutter_assets; path = Flutter/flutter_assets; sourceTree = SOURCE_ROOT; };
+		159F780DCA3E0EF53FDD4997 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		3B80C3931E831B6300D905FE /* App.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = App.framework; path = Flutter/App.framework; sourceTree = "<group>"; };
 		6B9A42672205CD7000D02BF1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -62,6 +61,8 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A0C392C072D7D65124332A9D /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
+		F99B5262268880F23501535E /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +92,9 @@
 		7B5CE1EFA0C783B2E909DFE7 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
+				F99B5262268880F23501535E /* Pods-Runner.debug.xcconfig */,
+				159F780DCA3E0EF53FDD4997 /* Pods-Runner.release.xcconfig */,
+				A0C392C072D7D65124332A9D /* Pods-Runner.profile.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -98,7 +102,6 @@
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
-				2D5378251FAA1A9400D5DBA9 /* flutter_assets */,
 				3B80C3931E831B6300D905FE /* App.framework */,
 				3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */,
 				9740EEBA1CF902C7004384FC /* Flutter.framework */,
@@ -193,13 +196,13 @@
 		97C146E61CF9000F007C117D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "The Chromium Authors";
 				TargetAttributes = {
 					97C146ED1CF9000F007C117D = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = 6H6WQC57G3;
-						LastSwiftMigration = 0910;
+						LastSwiftMigration = 1020;
 					};
 				};
 			};
@@ -208,6 +211,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -229,7 +233,6 @@
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
-				2D5378261FAA1A9400D5DBA9 /* flutter_assets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				6B9A42682205CD7000D02BF1 /* GoogleService-Info.plist in Resources */,
 			);
@@ -260,18 +263,120 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Runner/Pods-Runner-resources.sh",
-				"${PODS_ROOT}/AccountKit/AccountKitStrings.bundle",
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/af.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/ar.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/bn.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/ckb_IQ.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/cs.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/da.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/de.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/el.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/en.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/en_GB.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/es.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/es_ES.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/fi.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/fr.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/gu.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/he.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/hi.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/hr.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/hu.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/id.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/it.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/iw.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/ja.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/ko.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/ml.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/mr.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/ms.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/my.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/my_MM.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/nb.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/nl.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/pa.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/pl.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/pt.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/pt_PT.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/ro.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/ru.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/sk.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/sv.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/sw.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/sw_KE.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/ta.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/te.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/th.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/tl.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/tr.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/ur.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/ur_PK.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/vi.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/zh.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/zh_Hant_HK.lproj",
+				"${PODS_ROOT}/AccountKit/AccountKit.framework/AccountKitStrings.bundle/Resources/zh_Hant_TW.lproj",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccountKitStrings.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/af.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ar.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/bn.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ckb_IQ.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/cs.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/da.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/de.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/el.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/en.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/en_GB.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/es.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/es_ES.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/fi.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/fr.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/gu.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/he.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/hi.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/hr.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/hu.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/id.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/it.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/iw.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ja.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ko.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ml.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mr.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ms.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/my.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/my_MM.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/nb.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/nl.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/pa.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/pl.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/pt.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/pt_PT.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ro.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ru.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/sk.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/sv.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/sw.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/sw_KE.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ta.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/te.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/th.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/tl.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/tr.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ur.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ur_PK.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/vi.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/zh.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/zh_Hant_HK.lproj",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/zh_Hant_TW.lproj",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
@@ -296,7 +401,7 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
 				"${PODS_ROOT}/../.symlinks/flutter/ios/Flutter.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
@@ -317,7 +422,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E550C802984DC1AE95B0AF0D /* [CP] Check Pods Manifest.lock */ = {
@@ -384,6 +489,7 @@
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -449,7 +555,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.qrilt.eatzie;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Profile;
@@ -459,6 +565,7 @@
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -515,6 +622,7 @@
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -584,8 +692,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -612,8 +719,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.qrilt.eatzie;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

@@ -29,9 +29,6 @@ class Cart {
       newCartItem.item.objectId = itemObject["item"];
       newCartItem.quantity = itemObject["quantity"];
       cartItems.add(newCartItem);
-
-      //get item information
-      // newCartItem.getItemInformation(itemObject["item"]);
     }
   }
 
@@ -42,6 +39,23 @@ class Cart {
     //newCartMap will contain the updated representation of the cart
     var newCartMap =
         cartPlatformChannel.invokeMethod("addItemToCart", newItem.objectId);
+  }
+
+  //method to update this cart from a map (similar to using the constructor)
+  void updateFromMap(var map) {
+    this.objectId = map["objectId"];
+    this.createdAt = DateTime.parse(map["createdAt"]);
+    this.locationId = map["location"];
+
+    //get items
+    cartItems.clear();
+    for (var itemObject in map["items"]) {
+      print("adding cartitem");
+      CartItem newCartItem = CartItem();
+      newCartItem.item.objectId = itemObject["item"];
+      newCartItem.quantity = itemObject["quantity"];
+      cartItems.add(newCartItem);
+    }
   }
 }
 

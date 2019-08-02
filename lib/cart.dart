@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:eatzie/classes/listeners/cart_listener.dart';
+
 import 'package:eatzie/model/item.dart';
 import 'package:eatzie/model/location.dart';
 import 'package:eatzie/model/cart.dart';
@@ -337,11 +339,13 @@ class ViewCartWidget extends StatefulWidget {
   }
 }
 
-class _ViewCartWidgetState extends State<ViewCartWidget> {
+class _ViewCartWidgetState extends State<ViewCartWidget>
+    implements CartListener {
   //Properties
   Cart cart;
   Location location = Location();
   var platformChannel = MethodChannel("com.qrilt.eatzie/main");
+  var cartPlatformChannel = MethodChannel("com.qrilt.eatzie/cart");
 
   //Constructors
   _ViewCartWidgetState({this.cart});
@@ -444,6 +448,7 @@ class _ViewCartWidgetState extends State<ViewCartWidget> {
       cartItemsList.add(
         CartItemListViewItem(
           cartItem: cartItem,
+          cartListener: this,
         ),
       );
     }
@@ -483,27 +488,59 @@ class _ViewCartWidgetState extends State<ViewCartWidget> {
     //if reached till here, total has been computed, return it
     return total;
   }
+
+  //CartListener method implementations
+  //method for when an item is added to the cart
+  void onItemAddedToCart(Item item) async {
+    print("debugk item added to cart ${item.name}");
+    var updatedCart = await cartPlatformChannel
+        .invokeMethod("addItemToCart", [item.objectId, true]);
+
+    //update this cart with this map
+    setState(() {
+      this.cart.updateFromMap(updatedCart);
+    });
+  }
+
+  //method for when an item is removed from the cart
+  void onItemRemovedFromCart(Item item) async {
+    print("debugk item removed from cart ${item.name}");
+    var updatedCart = await cartPlatformChannel
+        .invokeMethod("removeItemFromCart", [item.objectId, true]);
+
+    //update this cart with this map
+    setState(() {
+      this.cart.updateFromMap(updatedCart);
+    });
+  }
 }
 
 class CartItemListViewItem extends StatefulWidget {
   //Properties
   final CartItem cartItem;
+  final CartListener cartListener;
 
   //Constructors
-  CartItemListViewItem({this.cartItem});
+  CartItemListViewItem({this.cartItem, this.cartListener});
+
+  //Methods
   @override
   _CartItemListViewItemState createState() {
-    return _CartItemListViewItemState(cartItem: this.cartItem);
+    return _CartItemListViewItemState(
+      cartItem: this.cartItem,
+      cartListener: this.cartListener,
+    );
   }
 }
 
 class _CartItemListViewItemState extends State<CartItemListViewItem> {
   //Properties
   CartItem cartItem;
+  CartListener cartListener;
   var platformChannel = MethodChannel("com.qrilt.eatzie/main");
 
   //Constructors
-  _CartItemListViewItemState({this.cartItem});
+  _CartItemListViewItemState({this.cartItem, this.cartListener});
 
   //Methods
   @override
@@ -592,41 +629,69 @@ class _CartItemListViewItemState extends State<CartItemListViewItem> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     InkWell(
-                      //Inkwell to respond to Icon touches
+                      //Reduce Quantity InkWell
+                      splashColor: Colors.blueGrey,
                       child: Container(
-                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.blueGrey,
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: EdgeInsets.all(2),
                         child: Icon(
                           //Reduce quantity button
-                          Icons.remove_circle,
-                          color: Colors.red,
-                          size: 20,
+                          Icons.remove,
+                          color: Colors.blueGrey,
+                          size: 16,
                         ),
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        if (cartItem.item.name != null) {
+                          cartListener.onItemRemovedFromCart(cartItem.item);
+                        }
+                      },
                       borderRadius: BorderRadius.circular(5),
                     ),
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 4),
+                      margin: EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
                         //Item Quantity Text
                         "${cartItem.quantity}",
                         style: TextStyle(
-                          color: Colors.deepOrange,
-                          fontSize: 14,
+                          color: Colors.black,
+                          fontSize: 16,
                         ),
                       ),
                     ),
                     InkWell(
+                      //Increase quantity InkWell
+                      splashColor: Colors.green,
                       child: Container(
-                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1.5,
+                            color: Colors.green,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: EdgeInsets.all(2),
                         child: Icon(
                           //Add Quantity Icon
-                          Icons.add_circle,
-                          color: Colors.red,
-                          size: 20,
+                          Icons.add,
+                          color: Colors.green,
+                          size: 16,
                         ),
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        //call method on listener if this cartItem's Item isn't null
+                        print("reduce item onTap");
+                        if (cartItem.item.name != null) {
+                          print("cartItem name not null");
+                          cartListener.onItemAddedToCart(cartItem.item);
+                        }
+                      },
                       borderRadius: BorderRadius.circular(5),
                     ),
                   ],

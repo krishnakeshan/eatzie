@@ -458,4 +458,9 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
       cartExists = true;
     });
   }
+
+  //method for when an item is removed from cart
+  void onItemRemovedFromCart(Item item) {
+    //do nothing
+  }
 }

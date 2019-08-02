@@ -36,7 +36,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   //properties
   int _selectedIndex = 0;
-  final _tabTitles = ["Home", "Feed", "Orders", "Inbox", "Profile"];
+  final _tabTitles = ["Home", "Orders", "Profile"];
   final _children = [
     HomeWidget(),
     HomeWidget(),

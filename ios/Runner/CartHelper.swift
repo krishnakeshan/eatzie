@@ -51,6 +51,34 @@ class CartHelper {
         }
     }
     
+    //method to remove an item from cart
+    func removeItemFromCart(itemId: String, returnUpdatedCart: Bool, flutterResult: @escaping FlutterResult) {
+        let params: [String : Any] = [
+            "itemId": itemId,
+            "userId": PFUser.current()!.objectId!
+        ]
+        
+        //call cloud function
+        PFCloud.callFunction(inBackground: "removeItemFromCart", withParameters: params) { (result, error) in
+            if error == nil {
+                //if updated cart was requested, first get updated cart
+                if returnUpdatedCart {
+                    let updatedCartQuery = PFQuery(className: "Cart");
+                    updatedCartQuery.getObjectInBackground(withId: (result as! String)) { (updatedCart, error) in
+                        if error == nil {
+                            flutterResult(self.objConverter.parseObjectToMap(parseObject: updatedCart!))
+                        }
+                    }
+                }
+                
+                //else simply return cart object id
+                else {
+                    flutterResult((result as! String))
+                }
+            }
+        }
+    }
+    
     //method to check if a cart exists for a given location
     func doesCartExist(locationId: String, flutterResult: @escaping FlutterResult) {
         let cartQuery = PFQuery(className: "Cart")
@@ -63,7 +91,7 @@ class CartHelper {
                 if cartObject != nil && !(cartObject!["items"] as! [NSDictionary]).isEmpty {
                     flutterResult(true)
                 }
-                
+                    
                     //cart doesn't exist, is empty, or both. return false
                 else {
                     flutterResult(false)

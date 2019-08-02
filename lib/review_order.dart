@@ -69,6 +69,7 @@ class _ReviewOrderWidgetState extends State<ReviewOrderWidget> {
                 decoration: InputDecoration.collapsed(
                   hintText: "Write a review?",
                 ),
+                textAlign: TextAlign.center,
                 maxLines: null,
               ),
             ),

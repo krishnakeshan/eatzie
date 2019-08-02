@@ -11,12 +11,12 @@ import Parse
     var flutterResults: [String : FlutterResult] = [:]
     let databaseHelper = DatabaseHelper()
     var cartHelper = CartHelper()
-    var accountKit: AKFAccountKit! = nil
+    var accountKit: AccountKitManager!
     
     //MARK: Methods
     override func application(
         _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
         ) -> Bool {
         
         //Configure Firebase
@@ -107,7 +107,7 @@ import Parse
     
     //method to start FB Account Kit login
     func initiateLogin(rootViewController: FlutterViewController) {
-        accountKit = AKFAccountKit(responseType: .accessToken)
+        accountKit = AccountKitManager(responseType: .accessToken)
         
         //check if existing account kit token is there
         if accountKit.currentAccessToken != nil {
@@ -120,8 +120,7 @@ import Parse
             
             //prepare loginViewController
             loginViewController.delegate = self
-            loginViewController.enableGetACall = true
-            loginViewController.enableSendToFacebook = true
+            loginViewController.isSendToFacebookEnabled = true
             
             //proceed to show if loginViewController is not nil
             if loginViewController != nil {
@@ -131,7 +130,7 @@ import Parse
     }
     
     //method to log in user on server side
-    func logInUser(accessToken: AKFAccessToken) {
+    func logInUser(accessToken: AccessToken) {
         //get account kit parameters, to pass to cloud function
         accountKit.requestAccount { (accountKitAccount, error) in
             if error == nil && accountKitAccount != nil {
@@ -176,7 +175,7 @@ import Parse
 //Account Kit View Controller Delegate Methods
 extension AppDelegate: AKFViewControllerDelegate {
     //method to handle successful login
-    func viewController(_ viewController: (UIViewController & AKFViewController)!, didCompleteLoginWith accessToken: AKFAccessToken!, state: String!) {
+    func viewController(_ viewController: (UIViewController & AKFViewController), didCompleteLoginWith accessToken: AccessToken, state: String) {
         logInUser(accessToken: accessToken)
     }
 }
