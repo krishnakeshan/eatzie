@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-import 'custom_widgets/list_view_items//active_order_list_view_item.dart';
+import 'custom_widgets/list_view_items/active_order_list_view_item.dart';
+
+import 'package:eatzie/model/order.dart';
 
 class OrdersTabWidget extends StatefulWidget {
+  //Methods
   @override
   _OrdersTabWidgetState createState() {
     return _OrdersTabWidgetState();
@@ -10,9 +14,20 @@ class OrdersTabWidget extends StatefulWidget {
 }
 
 class _OrdersTabWidgetState extends State<OrdersTabWidget> {
-  //Widgets
+  //Properties
+  List<Order> orders = new List();
+
+  static const orderChannel = MethodChannel("com.qrilt.eatzie/order");
 
   //Methods
+  @override
+  void initState() {
+    super.initState();
+
+    //get orders
+    _getActiveOrders();
+  }
+
   @override
   Widget build(BuildContext buildContext) {
     return DefaultTabController(
@@ -42,9 +57,11 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
               children: <Widget>[
                 ListView.builder(
                   itemBuilder: (BuildContext buildContext, int index) {
-                    return ActiveOrderListViewItem();
+                    return ActiveOrderListViewItem(
+                      order: orders[index],
+                    );
                   },
-                  itemCount: 6,
+                  itemCount: orders.length,
                 ),
                 ListView(
                   children: <Widget>[
@@ -57,5 +74,19 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
         ],
       ),
     );
+  }
+
+  //method to get orders for this user
+  void _getActiveOrders() async {
+    //call method on order channel
+    var result = await orderChannel.invokeMethod("getUserActiveOrders");
+
+    //create list of objects
+    print("got orders $result");
+    if (mounted) {
+      setState(() {
+        orders = Order.createListFromMaps(result);
+      });
+    }
   }
 }

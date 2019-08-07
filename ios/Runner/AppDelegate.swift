@@ -11,6 +11,7 @@ import Parse
     var flutterResults: [String : FlutterResult] = [:]
     let databaseHelper = DatabaseHelper()
     var cartHelper = CartHelper()
+    var orderHelper = OrderHelper()
     var accountKit: AccountKitManager!
     
     //MARK: Methods
@@ -43,6 +44,7 @@ import Parse
         let authChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/auth", binaryMessenger: viewController)
         let mainChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/main", binaryMessenger: viewController)
         let cartChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/cart", binaryMessenger: viewController)
+        let orderChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/order", binaryMessenger: viewController)
         
         //set method call handlers
         //set method call handler for auth channel
@@ -139,6 +141,26 @@ import Parse
             else if flutterMethodCall.method == "doesCartExist" {
                 let locationId = flutterMethodCall.arguments as! String
                 self.cartHelper.doesCartExist(locationId: locationId, flutterResult: flutterResult)
+            }
+        }
+        
+        //set method call handler for order channel
+        orderChannel.setMethodCallHandler { (flutterMethodCall, flutterResult) in
+            //check method and call appropriately
+            
+            //method to get user's all orders
+            if flutterMethodCall.method == "getUserOrders" {
+                self.orderHelper.getUserOrders(flutterResult: flutterResult)
+            }
+            
+            //method to get user's active orders
+            else if flutterMethodCall.method == "getUserActiveOrders" {
+                self.orderHelper.getUserActiveOrders(flutterResult: flutterResult)
+            }
+            
+            //method to get user's past orders
+            else if flutterMethodCall.method == "getUserPastOrders" {
+                self.orderHelper.getUserPastOrders(flutterResult: flutterResult)
             }
         }
         

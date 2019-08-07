@@ -11,6 +11,8 @@
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		3B80C3941E831B6300D905FE /* App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; };
 		3B80C3951E831B6300D905FE /* App.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6B919F5A22FB0846005DDE22 /* OrderHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B919F5922FB0846005DDE22 /* OrderHelper.swift */; };
+		6B919F5C22FB1B86005DDE22 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B919F5B22FB1B86005DDE22 /* Constants.swift */; };
 		6B9A42682205CD7000D02BF1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6B9A42672205CD7000D02BF1 /* GoogleService-Info.plist */; };
 		6BBE3180220880B30051D6D9 /* DatabaseHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE317F220880B30051D6D9 /* DatabaseHelper.swift */; };
 		6BBE3182220BDAE90051D6D9 /* CartHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE3181220BDAE90051D6D9 /* CartHelper.swift */; };
@@ -45,6 +47,8 @@
 		159F780DCA3E0EF53FDD4997 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		3B80C3931E831B6300D905FE /* App.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = App.framework; path = Flutter/App.framework; sourceTree = "<group>"; };
+		6B919F5922FB0846005DDE22 /* OrderHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderHelper.swift; sourceTree = "<group>"; };
+		6B919F5B22FB1B86005DDE22 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		6B9A42672205CD7000D02BF1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6BBE317F220880B30051D6D9 /* DatabaseHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseHelper.swift; sourceTree = "<group>"; };
 		6BBE3181220BDAE90051D6D9 /* CartHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartHelper.swift; sourceTree = "<group>"; };
@@ -84,7 +88,9 @@
 			children = (
 				6BBE317F220880B30051D6D9 /* DatabaseHelper.swift */,
 				6BBE3181220BDAE90051D6D9 /* CartHelper.swift */,
+				6B919F5922FB0846005DDE22 /* OrderHelper.swift */,
 				6BBE3183220BDB550051D6D9 /* ObjectConverter.swift */,
+				6B919F5B22FB1B86005DDE22 /* Constants.swift */,
 			);
 			name = helpers;
 			sourceTree = "<group>";
@@ -456,7 +462,9 @@
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				6BBE3182220BDAE90051D6D9 /* CartHelper.swift in Sources */,
+				6B919F5A22FB0846005DDE22 /* OrderHelper.swift in Sources */,
 				6BBE3180220880B30051D6D9 /* DatabaseHelper.swift in Sources */,
+				6B919F5C22FB1B86005DDE22 /* Constants.swift in Sources */,
 				6BBE3184220BDB550051D6D9 /* ObjectConverter.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);

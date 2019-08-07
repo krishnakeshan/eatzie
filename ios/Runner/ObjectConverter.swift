@@ -31,6 +31,18 @@ class ObjectConverter {
         return resultMap;
     }
     
+    //method to get a list of maps from ParseObject(s)
+    func createMapsFromObjects(parseObjects: [PFObject]) -> [[String : Any]] {
+        //create new list of maps
+        var maps = [[String : Any]]()
+        for parseObject in parseObjects {
+            //convert object and add to map
+            maps.append(parseObjectToMap(parseObject: parseObject))
+        }
+        
+        return maps;
+    }
+    
     //method to get a compatible representation of a value
     func getCompatibleRepresentation(obj: Any) -> Any {
         //attribute is of type string, simply put it into the map

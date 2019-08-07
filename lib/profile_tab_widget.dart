@@ -90,72 +90,70 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
               ),
             ),
           ),
-          Divider(),
+
+          //Account Information Section
           Container(
-            //Container for User Stats Row, to give it some padding
-            padding: EdgeInsets.all(16),
-            child: Row(
-              //Row for User Stats
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            color: Colors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Expanded(
-                  //Expanded Widget to make sure all stats take up equal space
-                  child: Column(
+                //Phone Number
+                Container(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
-                      Icon(
-                        CustomIcons.followers,
-                        size: 24,
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 6),
+                      //Title
+                      Expanded(
                         child: Text(
-                          "Followers",
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          "Phone Number",
+                          style: TextStyle(),
+                          textAlign: TextAlign.left,
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(top: 6),
+
+                      //Value
+                      Expanded(
                         child: Text(
-                          "52",
+                          "9483009001",
                           style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
                           ),
+                          textAlign: TextAlign.right,
                         ),
                       ),
                     ],
                   ),
                 ),
-                Expanded(
-                  //Expanded Widget to make sure all stats take up equal space
-                  child: Column(
+
+                Divider(
+                  height: 32,
+                ),
+
+                //Orders Placed
+                Container(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
-                      Icon(
-                        CustomIcons.following,
-                        size: 24,
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 6),
+                      //Title
+                      Expanded(
                         child: Text(
-                          "Following",
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          "Orders Placed",
+                          style: TextStyle(),
+                          textAlign: TextAlign.left,
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(top: 6),
+
+                      //Value
+                      Expanded(
                         child: Text(
-                          "100",
+                          "3",
                           style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
                           ),
+                          textAlign: TextAlign.right,
                         ),
                       ),
                     ],
@@ -163,6 +161,22 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                 ),
               ],
             ),
+          ),
+
+          //Log out Button
+          FlatButton.icon(
+            splashColor: Colors.red,
+            icon: Icon(
+              Icons.exit_to_app,
+              color: Colors.red,
+            ),
+            label: Text(
+              "Sign Out",
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+            onPressed: () {},
           ),
         ],
       ),
