@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 class CardImageView extends StatelessWidget {
   //Properties
   final String source;
+  final double height;
+  final double width;
+  final BoxFit fit;
+  final EdgeInsets margin;
 
   //Constructors
-  CardImageView({this.source});
+  CardImageView({this.source, this.height, this.width, this.fit, this.margin});
 
   @override
   Widget build(BuildContext buildContext) {
     return Container(
-      margin: EdgeInsets.fromLTRB(15, 0, 15, 10),
+      margin: margin != null ? margin : EdgeInsets.fromLTRB(15, 0, 15, 10),
       child: Card(
         color: Colors.white30,
         elevation: 4,
@@ -20,7 +24,9 @@ class CardImageView extends StatelessWidget {
         ),
         child: Image.network(
           source,
-          fit: BoxFit.fitWidth,
+          fit: fit != null ? fit : BoxFit.fitWidth,
+          width: width,
+          height: height,
         ),
         clipBehavior: Clip.antiAlias,
       ),

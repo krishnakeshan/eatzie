@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:eatzie/model/item.dart';
 
@@ -12,7 +14,6 @@ class Cart {
   var cartPlatformChannel = MethodChannel("com.qrilt.eatzie/cart");
 
   //Constructors
-
   //default constructor
   Cart();
 
@@ -24,7 +25,6 @@ class Cart {
 
     //get items
     for (var itemObject in map["items"]) {
-      print("adding cartitem");
       CartItem newCartItem = CartItem();
       newCartItem.item.objectId = itemObject["item"];
       newCartItem.quantity = itemObject["quantity"];
@@ -33,12 +33,11 @@ class Cart {
   }
 
   //Methods
-  //method to add an Item to a cart
-  void addItemToCart(Item newItem) async {
-    //call platform method to add this item
-    //newCartMap will contain the updated representation of the cart
-    var newCartMap =
-        cartPlatformChannel.invokeMethod("addItemToCart", newItem.objectId);
+  //method to get Item objects for this Cart
+  Future<void> getCartItems() async {
+    for (CartItem cartItem in cartItems) {
+      await cartItem.getItemObject();
+    }
   }
 
   //method to update this cart from a map (similar to using the constructor)
@@ -50,12 +49,19 @@ class Cart {
     //get items
     cartItems.clear();
     for (var itemObject in map["items"]) {
-      print("adding cartitem");
       CartItem newCartItem = CartItem();
       newCartItem.item.objectId = itemObject["item"];
       newCartItem.quantity = itemObject["quantity"];
       cartItems.add(newCartItem);
     }
+  }
+
+  //method to add an Item to a cart
+  void addItemToCart(Item newItem) async {
+    //call platform method to add this item
+    //newCartMap will contain the updated representation of the cart
+    var newCartMap =
+        cartPlatformChannel.invokeMethod("addItemToCart", newItem.objectId);
   }
 }
 
@@ -64,25 +70,23 @@ class CartItem {
   Item item = Item();
   int quantity;
 
-  var platformChannel = MethodChannel("com.qrilt.eatzie/main");
+  static const platformChannel = MethodChannel("com.qrilt.eatzie/main");
 
   //Constructors
   CartItem();
-  // CartItem.newItem({this.item, this.quantity = 1});
 
   //Methods
   //method to get an Item object from server
-  void getItemInformation(String itemId) async {
-    print("getting item information");
-    var itemObject =
-        await platformChannel.invokeMethod("getItemObject", itemId);
+  Future<void> getItemObject() async {
+    var itemObjectMap = await platformChannel.invokeMethod(
+      "getObjectWithId",
+      {
+        "className": "Item",
+        "objectId": this.item.objectId,
+      },
+    );
 
     //load information into item object
-    this.item = Item();
-    this.item.objectId = itemObject["objectId"];
-    this.item.imageURL = itemObject["imageURL"];
-    this.item.name = itemObject["name"];
-    this.item.description = itemObject["description"];
-    this.item.ppu = itemObject["ppu"].toDouble();
+    this.item = Item.fromMap(map: itemObjectMap);
   }
 }

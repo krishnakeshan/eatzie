@@ -8,4 +8,5 @@ abstract class CartListener {
   //method to call when Item object is added to cart
   void onItemAddedToCart(Item item);
   void onItemRemovedFromCart(Item item);
+  void onItemDeletedFromCart(Item item);
 }

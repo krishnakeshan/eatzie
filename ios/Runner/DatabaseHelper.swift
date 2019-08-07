@@ -53,26 +53,21 @@ class DatabaseHelper {
         }
     }
     
-    //method to get Cart object for a location
-    func getCartForLocation(locationId: String, flutterResult: @escaping FlutterResult) {
-        let cartQuery = PFQuery(className: "Cart")
-        cartQuery.whereKey("user", equalTo: PFUser.current()!.objectId!)
-        cartQuery.whereKey("location", equalTo: locationId)
-        cartQuery.getFirstObjectInBackground { (cartObject, error) in
-            if error == nil {
-                //cart query completed, a cart may or may not exist
-                if cartObject != nil {
-                    //cart object exists, encode it and send on flutterResult
-                    flutterResult(self.objConverter.parseObjectToMap(parseObject: cartObject!))
-                } else {
-                    //cart object doesn't exist, send false on flutterResult
-                    flutterResult(false)
-                }
+    //Methods to get raw items
+    //method to get an object by id
+    func getObjectWithId(className: String, objectId: String, flutterResult: @escaping FlutterResult) {
+        //create query
+        let objectQuery = PFQuery(className: className)
+        objectQuery.getObjectInBackground(withId: objectId, block: {(object, error) in
+            if error == nil && object != nil {
+                //convert object and send
+                flutterResult(self.objConverter.parseObjectToMap(parseObject: object!))
+            } else {
+                flutterResult(nil)
             }
-        }
+        })
     }
     
-    //Methods to get raw items
     //method to get a Location object
     func getLocationObject(locationId: String, flutterResult: @escaping FlutterResult) {
         let locationQuery = PFQuery(className: "Location")

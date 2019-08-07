@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/animation.dart';
 import 'package:flutter/services.dart';
 
+import 'package:eatzie/main.dart';
+
 class WelcomeScreenWidget extends StatefulWidget {
+  //Methods
   @override
   _WelcomeScreenWidgetState createState() {
     return _WelcomeScreenWidgetState();
@@ -13,7 +15,8 @@ class WelcomeScreenWidget extends StatefulWidget {
 
 class _WelcomeScreenWidgetState extends State<WelcomeScreenWidget> {
   //Properties
-  static const platform = const MethodChannel("com.qrilt.eatzie/main");
+  static const authChannel = const MethodChannel("com.qrilt.eatzie/auth");
+  bool isLoggingIn = false;
   bool isLoggedIn = false;
 
   //Methods
@@ -30,7 +33,9 @@ class _WelcomeScreenWidgetState extends State<WelcomeScreenWidget> {
             children: <Widget>[
               Container(
                 child: Text(
-                  "Welcome To Eatzie",
+                  isLoggingIn
+                      ? "Logging You In, One Moment..."
+                      : "Welcome To Eatzie",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
@@ -39,6 +44,8 @@ class _WelcomeScreenWidgetState extends State<WelcomeScreenWidget> {
                   ),
                 ),
               ),
+
+              //if login not in progress, show get started button
               Container(
                 margin: EdgeInsets.only(top: 24),
                 child: RaisedButton(
@@ -77,17 +84,25 @@ class _WelcomeScreenWidgetState extends State<WelcomeScreenWidget> {
 
   //method to initiate login
   Future<void> _initiateLogin() async {
-    try {
-      print("going native");
-      bool loginResult = await platform.invokeMethod("initiateLogin");
-      print("returned from native $loginResult");
+    bool loginResult = await authChannel.invokeMethod("initiateLogin");
 
-      //set state accordingly
+    //set state accordingly
+    if (mounted) {
       setState(() {
         isLoggedIn = loginResult;
       });
-    } on PlatformException catch (e) {
-      print("error initiating login: ${e.message}");
+
+      //if user logged in, open home screen
+      if (isLoggedIn) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (buildContext) {
+              return HomePage();
+            },
+          ),
+        );
+      }
     }
   }
 }

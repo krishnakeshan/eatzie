@@ -6,8 +6,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'custom_widgets/card_image_view.dart';
 import 'custom_widgets/list_view_items/location_menu_item.dart';
+import 'package:eatzie/view_location_cart.dart';
 
 import 'package:eatzie/classes/listeners/cart_listener.dart';
+
 import 'package:eatzie/model/location.dart';
 import 'package:eatzie/model/item.dart';
 
@@ -47,12 +49,15 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
   Widget photosTab = CustomScrollView(
     slivers: <Widget>[
       SliverList(
-        delegate: SliverChildBuilderDelegate((buildContext, index) {
-          return CardImageView(
-            source:
-                "https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_960_720.jpg",
-          );
-        }, childCount: 3),
+        delegate: SliverChildBuilderDelegate(
+          (buildContext, index) {
+            return CardImageView(
+              source:
+                  "https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_960_720.jpg",
+            );
+          },
+          childCount: 3,
+        ),
       )
     ],
   );
@@ -77,7 +82,7 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
     super.initState();
 
     //initialize tab controller
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
 
     //get items for this location
     _getItems();
@@ -107,6 +112,7 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
     }
 
     return Scaffold(
+      //Container for top padding
       body: Container(
         padding: EdgeInsets.only(top: MediaQuery.of(buildContext).padding.top),
         child: NestedScrollView(
@@ -244,6 +250,8 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
                   ),
                 ),
               ),
+
+              //TabBar
               SliverToBoxAdapter(
                 child: Container(
                   color: Colors.white,
@@ -260,12 +268,6 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
                       ),
                       Tab(
                         text: "Photos",
-                      ),
-                      Tab(
-                        text: "Offers",
-                      ),
-                      Tab(
-                        text: "Contact",
                       ),
                     ],
                   ),
@@ -284,8 +286,6 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
                   children: <Widget>[
                     getMenuTabView(),
                     photosTabView,
-                    Text("Third"),
-                    Text("Fourth"),
                   ],
                 ),
               ),
@@ -331,7 +331,17 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
                     ),
                   ),
                   onTap: () {
-                    print("viewing cart");
+                    //open cart for this location
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (buildContext) {
+                          return ViewLocationCartScreen(
+                            locationId: location.getObjectId(),
+                          );
+                        },
+                      ),
+                    );
                   },
                 ),
               ),
@@ -449,18 +459,24 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
 
   //cart listener methods
   //method for when an item is added to a cart
-  void onItemAddedToCart(Item item) {
+  void onItemAddedToCart(Item item) async {
     //call platform channel method
-    platformChannel.invokeMethod("addItemToCart", item.objectId);
+    var success =
+        await cartPlatformChannel.invokeMethod("addItemToCart", item.objectId);
 
     //set state to show "View Cart" button
-    setState(() {
-      cartExists = true;
-    });
+    if (mounted) {
+      setState(() {
+        cartExists = success;
+      });
+    }
   }
 
   //method for when an item is removed from cart
   void onItemRemovedFromCart(Item item) {
     //do nothing
   }
+
+  //method for when an item is deleted from cart
+  void onItemDeletedFromCart(Item item) {}
 }

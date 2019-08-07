@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:eatzie/view_location_cart.dart';
+
 import 'package:eatzie/classes/listeners/cart_listener.dart';
 
 import 'package:eatzie/model/item.dart';
@@ -97,9 +99,8 @@ class _CartWidgetState extends State<CartWidget> {
 
     //return a single cart view if there's only one cart
     else if (cartObjects.length == 1) {
-      return ViewCartWidget(
-        cartObject: cartObjects.first,
-      );
+      //return
+      return Container();
     }
 
     //return a list of carts if more than one carts
@@ -107,7 +108,7 @@ class _CartWidgetState extends State<CartWidget> {
       Widget cartsList = ListView.builder(
         itemBuilder: (buildContext, index) {
           //return a widget
-          CartLocationListViewItem(
+          return CartLocationListViewItem(
             cart: cartObjects[index],
           );
         },
@@ -141,6 +142,20 @@ class _CartWidgetState extends State<CartWidget> {
         this.cartObjects.clear();
         this.cartObjects.addAll(tempArray);
       });
+
+      //if only one cart was found, view that cart
+      if (tempArray.length == 1) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (buildContext) {
+              return ViewLocationCartScreen(
+                locationId: tempArray.first.locationId,
+              );
+            },
+          ),
+        );
+      }
     }
   }
 }
@@ -466,7 +481,7 @@ class _ViewCartWidgetState extends State<ViewCartWidget>
 
     //call setState
     setState(() {
-      location = Location.fromMap(map: locationObject);
+      location = Location.fromMap(locationObject);
     });
   }
 
@@ -513,6 +528,9 @@ class _ViewCartWidgetState extends State<ViewCartWidget>
       this.cart.updateFromMap(updatedCart);
     });
   }
+
+  //method for when an item is deleted from cart
+  void onItemDeletedFromCart(Item item) async {}
 }
 
 class CartItemListViewItem extends StatefulWidget {

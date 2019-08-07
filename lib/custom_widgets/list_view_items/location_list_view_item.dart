@@ -38,6 +38,7 @@ class _LocationListViewItemState extends State<LocationListViewItem> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            //Location Image
             Container(
               margin: EdgeInsets.only(right: 16),
               child: Card(
@@ -56,6 +57,8 @@ class _LocationListViewItemState extends State<LocationListViewItem> {
                 ),
               ),
             ),
+
+            //Location Information
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

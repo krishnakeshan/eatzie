@@ -8,12 +8,11 @@ class Location {
   String _address;
 
   //Constructors
-
   //default empty constructor
   Location();
 
   //constructor to make Location from map
-  Location.fromMap({var map}) {
+  Location.fromMap(var map) {
     this.setObjectId(map["objectId"]);
     this.setCreatedAt(map["createdAt"]);
     this.setImageURL(map["imageURL"]);

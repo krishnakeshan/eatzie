@@ -35,8 +35,26 @@ class CartHelper {
         }
     }
     
+    //function to get cart for a location for this user
+    func getUserCartForLocation(locationId: String, flutterResult: @escaping FlutterResult) {
+        //prepare query
+        let cartQuery = PFQuery(className: "Cart")
+        cartQuery.whereKey("user", equalTo: PFUser.current()!.objectId!)
+        cartQuery.whereKey("location", equalTo: locationId)
+        cartQuery.getFirstObjectInBackground { (cartObject, error) in
+            if error == nil && cartObject != nil {
+                //got cart object, convert and return
+                flutterResult(self.objConverter.parseObjectToMap(parseObject: cartObject!))
+            } else {
+                //error getting cart object, return null
+                flutterResult(nil)
+            }
+        }
+    }
+    
     //method to add an item to cart
     func addItemToCart(itemId: String, flutterResult: @escaping FlutterResult) {
+        //prepare params
         let params: [String : Any] = [
             "itemId": itemId,
             "userId": PFUser.current()!.objectId!
@@ -47,12 +65,14 @@ class CartHelper {
             //cloud function returns objectId of the cart
             if error == nil {
                 flutterResult(true)
+            } else {
+                flutterResult(false)
             }
         }
     }
     
     //method to remove an item from cart
-    func removeItemFromCart(itemId: String, returnUpdatedCart: Bool, flutterResult: @escaping FlutterResult) {
+    func removeItemFromCart(itemId: String, flutterResult: @escaping FlutterResult) {
         let params: [String : Any] = [
             "itemId": itemId,
             "userId": PFUser.current()!.objectId!
@@ -61,20 +81,9 @@ class CartHelper {
         //call cloud function
         PFCloud.callFunction(inBackground: "removeItemFromCart", withParameters: params) { (result, error) in
             if error == nil {
-                //if updated cart was requested, first get updated cart
-                if returnUpdatedCart {
-                    let updatedCartQuery = PFQuery(className: "Cart");
-                    updatedCartQuery.getObjectInBackground(withId: (result as! String)) { (updatedCart, error) in
-                        if error == nil {
-                            flutterResult(self.objConverter.parseObjectToMap(parseObject: updatedCart!))
-                        }
-                    }
-                }
-                
-                //else simply return cart object id
-                else {
-                    flutterResult((result as! String))
-                }
+                flutterResult(true)
+            } else {
+                flutterResult(false)
             }
         }
     }

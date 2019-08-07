@@ -20,12 +20,12 @@ class ObjectConverter {
         resultMap["objectId"] = parseObject.objectId!
         resultMap["createdAt"] = parseObject.createdAt!.description
         
-        //convert the rest of the attributes
+        //convert the rest of the attributes, except ACL
         for key in parseObject.allKeys {
-            let attribute = parseObject[key]!
-            
-            //get the correct representation of this attribute and put it into resultMap
-            resultMap[key] = getCompatibleRepresentation(obj: attribute)
+            if key != "ACL" {
+                let attribute = parseObject[key]!
+                resultMap[key] = getCompatibleRepresentation(obj: attribute)
+            }
         }
         
         return resultMap;

@@ -14,13 +14,10 @@ import Parse
     var accountKit: AccountKitManager!
     
     //MARK: Methods
-    override func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-        ) -> Bool {
-        
+    func initStuff() {
         //Configure Firebase
         FirebaseApp.configure()
+        
         
         //Initialize Parse
         let parseClientConfiguration = ParseClientConfiguration {
@@ -29,27 +26,65 @@ import Parse
         }
         
         Parse.initialize(with: parseClientConfiguration)
+    }
+    
+    override func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+        ) -> Bool {
+        
+        //initialize stuff
+        initStuff()
         
         //get a view controller
         let viewController: FlutterViewController = window.rootViewController! as! FlutterViewController
         
         //declare channels
+        let authChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/auth", binaryMessenger: viewController)
         let mainChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/main", binaryMessenger: viewController)
         let cartChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/cart", binaryMessenger: viewController)
         
         //set method call handlers
-        //set method call handler for main channel
-        mainChannel.setMethodCallHandler { (flutterMethodCall, flutterResult) in
-            //determine which method called and perform actions accordingly
+        //set method call handler for auth channel
+        authChannel.setMethodCallHandler { (flutterMethodCall, flutterResult) in
+            //method to get current auth status
+            if (flutterMethodCall.method == "getAuthStatus") {
+                //first check if logged in with Firebase
+                if Auth.auth().currentUser != nil {
+                    //logged in with Firebase, check with Parse
+                    if PFUser.current() != nil {
+                        //logged in with Parse, return true
+                        flutterResult(true)
+                        return
+                    }
+                }
+                
+                //reaching here means not logged in, return false
+                flutterResult(false)
+                return
+            }
+            
             //method to initiate login
-            if flutterMethodCall.method == "initiateLogin" {
+            else if flutterMethodCall.method == "initiateLogin" {
                 //set result object
                 self.flutterResults["accountKit"] = flutterResult
                 
                 //start Account Kit login flow
                 self.initiateLogin(rootViewController: viewController)
             }
-            
+        }
+        
+        //set method call handler for main channel
+        mainChannel.setMethodCallHandler { (flutterMethodCall, flutterResult) in
+            //determine which method called and perform actions accordingly
+            //method to get an object with id
+            if flutterMethodCall.method == "getObjectWithId" {
+                let arguments = flutterMethodCall.arguments as! [String : Any]
+                let className = arguments["className"] as! String
+                let objectId = arguments["objectId"] as! String
+                self.databaseHelper.getObjectWithId(className: className, objectId: objectId, flutterResult: flutterResult)
+            }
+                
             //method to get locations for user
             else if flutterMethodCall.method == "getLocations" {
                 self.databaseHelper.getLocations(flutterResult: flutterResult)
@@ -60,14 +95,8 @@ import Parse
                 let locationId = flutterMethodCall.arguments as! String
                 self.databaseHelper.getItemsForLocation(locationId: locationId, flutterResult: flutterResult)
             }
-            
-            //method to get Cart object for a given location
-            else if flutterMethodCall.method == "getCartForLocation" {
-                let locationId = flutterMethodCall.arguments as! String
-                self.databaseHelper.getCartForLocation(locationId: locationId, flutterResult: flutterResult)
-            }
                 
-                //method to get Location object from server
+            //method to get Location object from server
             else if flutterMethodCall.method == "getLocationObject" {
                 let locationId = flutterMethodCall.arguments as! String
                 self.databaseHelper.getLocationObject(locationId: locationId, flutterResult: flutterResult)
@@ -87,10 +116,23 @@ import Parse
                 self.cartHelper.getUserCartObjects(flutterResult: flutterResult)
             }
                 
+                //method to get cart for a location for this user
+            else if (flutterMethodCall.method == "getUserCartForLocation") {
+                let arguments = flutterMethodCall.arguments as! [String : Any]
+                let locationId = arguments["locationId"] as! String
+                self.cartHelper.getUserCartForLocation(locationId: locationId, flutterResult: flutterResult)
+            }
+                
             //method to add an item to the cart
             else if flutterMethodCall.method == "addItemToCart" {
                 let itemId = flutterMethodCall.arguments as! String
                 self.cartHelper.addItemToCart(itemId: itemId, flutterResult: flutterResult);
+            }
+                
+            //method to remove an item from cart
+            else if flutterMethodCall.method == "removeItemFromCart" {
+                let itemId = flutterMethodCall.arguments as! String
+                self.cartHelper.removeItemFromCart(itemId: itemId, flutterResult: flutterResult)
             }
             
             //method to check if a cart exists for a given location
