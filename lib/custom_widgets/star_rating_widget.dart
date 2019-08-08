@@ -3,26 +3,36 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class StarRatingWidget extends StatefulWidget {
-  //Constructors
-  StarRatingWidget({this.starIconSize = 14});
-
   //Properties
+  final String id;
+  final RatingListener ratingListener;
   final double starIconSize;
+
+  //Constructors
+  StarRatingWidget({this.id, this.ratingListener, this.starIconSize = 14});
 
   //Methods
   @override
   _StarRatingWidgetState createState() {
-    return _StarRatingWidgetState(starIconSize: this.starIconSize);
+    return _StarRatingWidgetState(
+      id: id,
+      ratingListener: ratingListener,
+      starIconSize: this.starIconSize,
+    );
   }
 }
 
 class _StarRatingWidgetState extends State<StarRatingWidget>
     implements StarSelectionInterface {
-  //Constructors
-  _StarRatingWidgetState({this.starIconSize = 14});
   //Properties
+  String id;
+  RatingListener ratingListener;
   double starIconSize;
   int _currentRating = 0;
+
+  //Constructors
+  _StarRatingWidgetState(
+      {this.id, this.ratingListener, this.starIconSize = 14});
 
   //Methods
   @override
@@ -70,8 +80,6 @@ class _StarRatingWidgetState extends State<StarRatingWidget>
 
   //Star Selection Interface Methods
   void onStarSelected(RatingStarWidget starWidget) {
-    print("listener: star selected ${starWidget.starPosition}");
-
     setState(() {
       //a new, rating has been selected, update rating
       if (_currentRating == (starWidget.starPosition + 1)) {
@@ -83,7 +91,14 @@ class _StarRatingWidgetState extends State<StarRatingWidget>
         _currentRating = (starWidget.starPosition + 1);
       }
     });
+
+    //some rating set, call listener method
+    ratingListener.onRatingSet(id, _currentRating);
   }
+}
+
+class RatingListener {
+  void onRatingSet(String id, int rating) {}
 }
 
 class RatingStarWidget extends StatelessWidget {

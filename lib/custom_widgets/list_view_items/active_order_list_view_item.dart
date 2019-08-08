@@ -208,7 +208,11 @@ class _ActiveOrderListViewItemState extends State<ActiveOrderListViewItem> {
           buildContext,
           MaterialPageRoute(
             builder: (buildContext) {
-              return ViewOrderWidget();
+              return ViewOrderWidget(
+                order: order,
+                location: location,
+                items: items,
+              );
             },
           ),
         );

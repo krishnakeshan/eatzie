@@ -5,18 +5,36 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:eatzie/custom_widgets/star_rating_widget.dart';
 import 'package:eatzie/view_item.dart';
 
-/*
-A class for the items in an order. Used in list view with builders mostly.
-*/
+import 'package:eatzie/model/order.dart';
+import 'package:eatzie/model/item.dart';
 
 class OrderItemListViewItem extends StatefulWidget {
+  //Properties
+  final OrderItem orderItem;
+  final Item item;
+
+  //Constructors
+  OrderItemListViewItem({this.orderItem, this.item});
+
+  //Methods
   @override
   _OrderItemListViewItemState createState() {
-    return _OrderItemListViewItemState();
+    return _OrderItemListViewItemState(
+      orderItem: orderItem,
+      item: item,
+    );
   }
 }
 
 class _OrderItemListViewItemState extends State<OrderItemListViewItem> {
+  //Properties
+  OrderItem orderItem;
+  Item item;
+
+  //Constructors
+  _OrderItemListViewItemState({this.orderItem, this.item});
+
+  //Methods
   @override
   Widget build(BuildContext buildContext) {
     return GestureDetector(
@@ -45,7 +63,7 @@ class _OrderItemListViewItemState extends State<OrderItemListViewItem> {
                       clipBehavior: Clip.antiAlias,
                       child: Image.network(
                         //Item Image! xD
-                        "https://cdn.pixabay.com/photo/2015/09/02/12/43/meal-918639_960_720.jpg",
+                        item.imageURL,
                         height: 35,
                         width: 35,
                         fit: BoxFit.cover,
@@ -61,7 +79,7 @@ class _OrderItemListViewItemState extends State<OrderItemListViewItem> {
                         children: <Widget>[
                           Text(
                             //Item Name Text
-                            "Tea",
+                            item.name,
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                             ),
@@ -71,7 +89,7 @@ class _OrderItemListViewItemState extends State<OrderItemListViewItem> {
                             margin: EdgeInsets.only(top: 4),
                             child: Text(
                               //Item Price Text
-                              "Rs. 12",
+                              "Rs. ${orderItem.ppu}",
                               style: TextStyle(
                                 color: Colors.blueGrey,
                                 fontSize: 11,
@@ -89,7 +107,7 @@ class _OrderItemListViewItemState extends State<OrderItemListViewItem> {
                       padding: EdgeInsets.all(4),
                       child: Text(
                         //Quantity Text
-                        "x3",
+                        "x${orderItem.quantity}",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -138,7 +156,7 @@ class _OrderItemListViewItemState extends State<OrderItemListViewItem> {
                       //Item Total Container
                       child: Text(
                         //Item Total Text
-                        "Rs. 36",
+                        "Rs. ${orderItem.ppu * orderItem.quantity}",
                         style: TextStyle(
                           color: Colors.black87,
                           fontWeight: FontWeight.w600,

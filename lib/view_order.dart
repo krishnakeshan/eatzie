@@ -6,14 +6,42 @@ import 'package:eatzie/custom_widgets/list_view_items/order_item_list_view_item.
 import 'package:eatzie/review_order.dart';
 import 'package:eatzie/custom_widgets/order_progress.dart';
 
+import 'package:eatzie/classes/Constants.dart';
+
+import 'package:eatzie/model/order.dart';
+import 'package:eatzie/model/location.dart';
+import 'package:eatzie/model/item.dart';
+
 class ViewOrderWidget extends StatefulWidget {
+  //Properties
+  final Order order;
+  final Location location;
+  final List<Item> items;
+
+  //Constructors
+  ViewOrderWidget({this.order, this.location, this.items});
+
+  //Methods
   @override
   _ViewOrderWidgetState createState() {
-    return _ViewOrderWidgetState();
+    return _ViewOrderWidgetState(
+      order: order,
+      location: location,
+      items: items,
+    );
   }
 }
 
 class _ViewOrderWidgetState extends State<ViewOrderWidget> {
+  //Properties
+  Order order;
+  Location location;
+  List<Item> items;
+
+  //Constructors
+  _ViewOrderWidgetState({this.order, this.location, this.items});
+
+  //Methods
   @override
   Widget build(BuildContext buildContext) {
     return Scaffold(
@@ -40,7 +68,7 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    "Madouk Cafe",
+                    location.getName(),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -66,7 +94,7 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
             //Location Address
             margin: EdgeInsets.only(top: 4),
             child: Text(
-              "#3, Whitefield, Bangalore-32",
+              location.getAddress(),
               style: TextStyle(color: Colors.blueGrey),
             ),
           ),
@@ -86,7 +114,7 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                 //Order ID Text Expanded
                 Expanded(
                   child: Text(
-                    "20851",
+                    order.objectId,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -115,7 +143,7 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
             //Time Text
             margin: EdgeInsets.only(top: 8),
             child: Text(
-              "19 January, 2019 at 18:40",
+              order.createdAt,
               style: TextStyle(
                 color: Colors.blueGrey,
                 fontSize: 14,
@@ -135,110 +163,132 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                   style: TextStyle(),
                 ),
                 Text(
-                  "In Progress",
+                  Constants.OrderStatusStrings[order.statusCode],
                   style: TextStyle(
-                    color: Colors.green,
+                    color: Constants.OrderStatusColors[order.statusCode],
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
           ),
-          OrderProgressWidget(),
-          GestureDetector(
-            //Review prompt gesture detector
-            onTap: () {
-              //open ReviewOrderWidget
-              Navigator.push(
-                buildContext,
-                new MaterialPageRoute(
-                  builder: (buildContext) {
-                    return new ReviewOrderWidget();
-                  },
-                ),
-              );
-            },
-            child: Card(
-              //Review prompt card
-              margin: EdgeInsets.only(top: 16, bottom: 16),
-              child: Container(
-                //Review prompt container
-                padding: EdgeInsets.all(16),
-                child: Row(
-                  //Main Row
-                  children: <Widget>[
-                    // Icon(
-                    //   Icons.rate_review,
-                    //   color: Colors.blue,
-                    // ),
-                    Expanded(
-                      //Review Prompt Text Expanded
-                      child: Container(
-                        // margin: EdgeInsets.only(left: 16),
-                        child: Column(
-                          //Review Prompt Text Column
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              //Prompt heading Text
-                              "We'd love to hear from you!",
-                              style: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.only(top: 4),
-                              child: Text(
-                                "Please take a moment and rate this order",
+          OrderProgressWidget(
+            statusCode: order.statusCode,
+          ),
+          Visibility(
+            //only show if order is completed
+            visible: order.statusCode == 4,
+            child: GestureDetector(
+              //Review prompt gesture detector
+              onTap: () {
+                //open ReviewOrderWidget
+                Navigator.push(
+                  buildContext,
+                  new MaterialPageRoute(
+                    builder: (buildContext) {
+                      return ReviewOrderScreen(
+                        order: order,
+                        location: location,
+                        items: items,
+                      );
+                    },
+                  ),
+                );
+              },
+              child: Card(
+                //Review prompt card
+                margin: EdgeInsets.only(top: 16, bottom: 16),
+                child: Container(
+                  //Review prompt container
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    //Main Row
+                    children: <Widget>[
+                      // Icon(
+                      //   Icons.rate_review,
+                      //   color: Colors.blue,
+                      // ),
+                      Expanded(
+                        //Review Prompt Text Expanded
+                        child: Container(
+                          // margin: EdgeInsets.only(left: 16),
+                          child: Column(
+                            //Review Prompt Text Column
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                //Prompt heading Text
+                                "We'd love to hear from you!",
                                 style: TextStyle(
-                                  color: Colors.blueGrey,
-                                  fontSize: 12,
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
                                 ),
                               ),
-                            ),
-                          ],
+                              Container(
+                                margin: EdgeInsets.only(top: 4),
+                                child: Text(
+                                  "Please take a moment and rate this order",
+                                  style: TextStyle(
+                                    color: Colors.blueGrey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Container(
-                      width: 35,
-                      height: 35,
-                      margin: EdgeInsets.only(left: 8),
-                      child: FloatingActionButton(
-                        heroTag: "rateOrderFAB",
-                        elevation: 2,
-                        backgroundColor: Colors.green,
-                        child: Icon(
-                          Icons.arrow_forward,
-                          color: Colors.white,
+
+                      Container(
+                        width: 35,
+                        height: 35,
+                        margin: EdgeInsets.only(left: 8),
+                        child: FloatingActionButton(
+                          heroTag: "rateOrderFAB",
+                          elevation: 2,
+                          backgroundColor: Colors.white,
+                          child: Icon(
+                            Icons.arrow_forward,
+                            size: 20,
+                            color: Colors.green,
+                          ),
+                          onPressed: () {
+                            //open ReviewOrderWidget
+                            Navigator.push(
+                              buildContext,
+                              new MaterialPageRoute(
+                                builder: (buildContext) {
+                                  return ReviewOrderScreen(
+                                    order: order,
+                                    location: location,
+                                    items: items,
+                                  );
+                                },
+                              ),
+                            );
+                          },
                         ),
-                        onPressed: () {
-                          //open ReviewOrderWidget
-                          Navigator.push(
-                            buildContext,
-                            new MaterialPageRoute(
-                              builder: (buildContext) {
-                                return new ReviewOrderWidget();
-                              },
-                            ),
-                          );
-                        },
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
+
+          //Divider
+          Divider(
+            height: 32,
+          ),
+
+          //Order Summary Title
           Container(
-            //Order Summary Title
             margin: EdgeInsets.only(top: 8),
             child: Text(
               "Order Summary",
               style: TextStyle(
-                color: Colors.black54,
+                color: Colors.black87,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -248,19 +298,81 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
             //Order Summary Column
             margin: EdgeInsets.only(top: 16),
             child: Column(
+              children: _getOrderItemsList(),
+            ),
+          ),
+
+          //Divider
+          Divider(
+            height: 32,
+          ),
+
+          //Order Total Text
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.black87,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+            child: Row(
               children: <Widget>[
-                OrderItemListViewItem(),
-                OrderItemListViewItem(),
-                OrderItemListViewItem(),
-                OrderItemListViewItem(),
-                OrderItemListViewItem(),
-                OrderItemListViewItem(),
-                OrderItemListViewItem(),
+                //Order Total Title
+                Container(
+                  child: Text(
+                    "TOTAL:",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+
+                //Total Value
+                Expanded(
+                  child: Container(
+                    child: Text(
+                      "Rs. ${order.total}",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  //method to get list of order items
+  List<Widget> _getOrderItemsList() {
+    List<Widget> orderItems = List();
+
+    //add each item in order
+    for (OrderItem orderItem in order.orderItems) {
+      //find corresponding Item for this orderItem
+      for (Item item in items) {
+        if (item.objectId == orderItem.itemId) {
+          //item found, add to list
+          orderItems.add(
+            OrderItemListViewItem(
+              orderItem: orderItem,
+              item: item,
+            ),
+          );
+
+          //break from inner loop
+          break;
+        }
+      }
+    }
+
+    //return created list
+    return orderItems;
   }
 }
