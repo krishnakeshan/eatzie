@@ -1,10 +1,12 @@
-import 'package:eatzie/custom_widgets/list_view_items/cart_item_list_view_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:eatzie/model/location.dart';
 import 'package:eatzie/model/cart.dart';
 import 'package:eatzie/model/item.dart';
+
+import 'package:eatzie/checkout.dart';
+import 'package:eatzie/custom_widgets/list_view_items/cart_item_list_view_item.dart';
 
 import 'package:eatzie/classes/listeners/cart_listener.dart';
 
@@ -182,7 +184,19 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
               ),
             ),
             splashColor: Colors.orange,
-            onTap: () {},
+            onTap: () {
+              //open checkout page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (buildContext) {
+                    return CheckoutScreen(
+                      cart: cart,
+                    );
+                  },
+                ),
+              );
+            },
           ),
         ],
       ),

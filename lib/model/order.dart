@@ -58,7 +58,6 @@ class OrderItem {
   //method to create list of OrderItems
   static List<OrderItem> createListFromMaps(var maps) {
     //create list of OrderItems
-    print("creating orderitems $maps");
     List<OrderItem> orderItems = new List();
     for (var map in maps) {
       orderItems.add(OrderItem.fromMap(map));
