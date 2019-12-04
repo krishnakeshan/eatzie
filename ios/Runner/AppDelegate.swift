@@ -45,10 +45,10 @@ import PaymentSDK
         let viewController: FlutterViewController = window.rootViewController! as! FlutterViewController
         
         //declare channels
-        let authChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/auth", binaryMessenger: viewController)
-        let mainChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/main", binaryMessenger: viewController)
-        let cartChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/cart", binaryMessenger: viewController)
-        let orderChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/order", binaryMessenger: viewController)
+        let authChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/auth", binaryMessenger: viewController as! FlutterBinaryMessenger)
+        let mainChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/main", binaryMessenger: viewController as! FlutterBinaryMessenger)
+        let cartChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/cart", binaryMessenger: viewController as! FlutterBinaryMessenger)
+        let orderChannel = FlutterMethodChannel(name: "com.qrilt.eatzie/order", binaryMessenger: viewController as! FlutterBinaryMessenger)
         
         //set method call handlers
         //set method call handler for auth channel
