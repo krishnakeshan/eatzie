@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:eatzie/AppManager.dart';
 
 import 'custom_widgets/list_view_items/active_order_list_view_item.dart';
+import 'custom_widgets/list_view_items/past_order_list_view_item.dart';
 
 import 'package:eatzie/model/order.dart';
 
@@ -15,17 +16,21 @@ class OrdersTabWidget extends StatefulWidget {
 
 class _OrdersTabWidgetState extends State<OrdersTabWidget> {
   //Properties
-  List<Order> orders = new List();
+  AppManager appManager = AppManager.getInstance();
 
-  static const orderChannel = MethodChannel("com.qrilt.eatzie/order");
+  List<Order> activeOrders = new List();
+  List<Order> pastOrders = new List();
 
   //Methods
   @override
   void initState() {
     super.initState();
 
-    //get orders
+    //get active orders
     _getActiveOrders();
+
+    //get past orders
+    _getPastOrders();
   }
 
   @override
@@ -55,18 +60,24 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
           Expanded(
             child: TabBarView(
               children: <Widget>[
+                //TabBarView for Active Orders
                 ListView.builder(
                   itemBuilder: (BuildContext buildContext, int index) {
                     return ActiveOrderListViewItem(
-                      order: orders[index],
+                      order: activeOrders[index],
                     );
                   },
-                  itemCount: orders.length,
+                  itemCount: activeOrders.length,
                 ),
-                ListView(
-                  children: <Widget>[
-                    Text("Past Orders"),
-                  ],
+
+                //TabBarView for Past Orders
+                ListView.builder(
+                  itemBuilder: (buildContext, index) {
+                    return PastOrderListViewItem(
+                      order: pastOrders[index],
+                    );
+                  },
+                  itemCount: pastOrders.length,
                 ),
               ],
             ),
@@ -78,14 +89,28 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
 
   //method to get orders for this user
   void _getActiveOrders() async {
-    //call method on order channel
-    var result = await orderChannel.invokeMethod("getUserActiveOrders");
+    //call appManager method
+    var result =
+        await appManager.getUserActiveOrders(fromLocalDatastore: false);
 
     //create list of objects
     print("got orders $result");
     if (mounted) {
       setState(() {
-        orders = Order.createListFromMaps(result);
+        activeOrders = result;
+      });
+    }
+  }
+
+  //method to get past orders for this user
+  void _getPastOrders() async {
+    //call appManager method
+    var result = await appManager.getUserPastOrders(fromLocalDataStore: false);
+
+    //create list of objects
+    if (mounted) {
+      setState(() {
+        pastOrders = result;
       });
     }
   }

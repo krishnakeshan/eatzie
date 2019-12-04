@@ -90,11 +90,11 @@ class _CartItemListViewItemState extends State<CartItemListViewItem> {
             count: cartItem.quantity,
             onIncremented: () {
               //call method on cart listener
-              cartListener.onItemAddedToCart(cartItem.item);
+              cartListener.onItemAddedToCart(item: cartItem.item);
             },
             onDecremented: () {
               //call method on cart listener
-              cartListener.onItemRemovedFromCart(cartItem.item);
+              cartListener.onItemRemovedFromCart(item: cartItem.item);
             },
           ),
         ],

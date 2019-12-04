@@ -100,26 +100,40 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ),
 
           //Proceed Button
-          Container(
-            margin: EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: RaisedButton.icon(
-              color: Colors.deepOrange,
-              label: Text(
-                "Proceed",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
+          InkWell(
+            child: Ink(
+              color: Colors.red,
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  //Proceed Text
+                  Text(
+                    "Proceed",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+
+                  //Right Arrow Icon
+                  Container(
+                    margin: EdgeInsets.only(left: 24),
+                    child: Icon(
+                      Icons.arrow_forward,
+                      color: Colors.white70,
+                      size: 16,
+                    ),
+                  ),
+                ],
               ),
-              icon: Icon(
-                Icons.arrow_forward,
-                color: Colors.white,
-                size: 16,
-              ),
-              onPressed: () {
-                //redirect
-                _checkoutUser();
-              },
             ),
+            splashColor: Colors.orange,
+            onTap: () {
+              _checkoutUser();
+            },
           ),
         ],
       ),

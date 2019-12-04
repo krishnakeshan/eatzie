@@ -24,6 +24,7 @@ import PaymentSDK
         
         //Initialize Parse
         let parseClientConfiguration = ParseClientConfiguration {
+            $0.isLocalDatastoreEnabled = true
             $0.applicationId = "87c27ca0-2133-400c-aadf-beb43d430315"
             $0.server = "http://34.73.142.234:1337/eatzie"
         }
@@ -150,10 +151,124 @@ import PaymentSDK
         
         //set method call handler for order channel
         orderChannel.setMethodCallHandler { (flutterMethodCall, flutterResult) in
-            //check method and call appropriately
+            //method to sync user's active orders
+            if flutterMethodCall.method == "syncUserActiveOrders" {
+                //create query to get orders
+                let activeOrdersQuery = PFQuery(className: "Order")
+                activeOrdersQuery.whereKey("statusCode", lessThan: 4)
+                activeOrdersQuery.findObjectsInBackground(block: { (activeOrders, error) in
+                    if error == nil {
+                        //unpin all objects with this tag
+                        PFObject.unpinAllObjectsInBackground(withName: "activeOrders", block: { (success, error) in
+                            if error == nil && success {
+                                //now pin newly acquired objects
+                                PFObject.pinAll(inBackground: activeOrders!, withName: "activeOrders", block: { (success, error) in
+                                    if error == nil && success {
+                                        flutterResult(true)
+                                    } else {
+                                        //error pinning, return false
+                                        flutterResult(false)
+                                    }
+                                })
+                            } else {
+                                //error unpinning, return false
+                                flutterResult(false)
+                            }
+                        })
+                    } else {
+                        //error retrieving from server, return false
+                        flutterResult(false)
+                    }
+                })
+            }
+                
+            //method to sync user's past orders
+            else if flutterMethodCall.method == "syncUserPastOrders" {
+                //create query to get orders
+                let pastOrdersQuery = PFQuery(className: "Order")
+                pastOrdersQuery.whereKey("statusCode", equalTo: 4)
+                pastOrdersQuery.findObjectsInBackground(block: { (pastOrders, error) in
+                    if error == nil {
+                        //unpin all objects with this tag
+                        PFObject.unpinAllObjectsInBackground(withName: "pastOrders", block: { (success, error) in
+                            if error == nil && success {
+                                //now pin newly acquired objects
+                                PFObject.pinAll(inBackground: pastOrders!, withName: "pastOrders", block: { (success, error) in
+                                    if error == nil && success {
+                                        flutterResult(true)
+                                    } else {
+                                        //error pinning, return false
+                                        flutterResult(false)
+                                    }
+                                })
+                            } else {
+                                //error unpinning, return false
+                                flutterResult(false)
+                            }
+                        })
+                    } else {
+                        //error retrieving from server, return false
+                        flutterResult(false)
+                    }
+                })
+            }
+                
+                //method to get user's active orders
+            else if flutterMethodCall.method == "getUserActiveOrders" {
+                //get arguments
+                let arguments = flutterMethodCall.arguments as! [String : Any]
+                let fromLocalDatastore = arguments["fromLocalDatastore"] as! Bool
+                
+                //create query
+                let ordersQuery = PFQuery(className: "Order")
+                ordersQuery.whereKey("statusCode", lessThan: 4)
+                
+                //determine source
+                if fromLocalDatastore {
+                    ordersQuery.fromLocalDatastore()
+                }
+                
+                //execute query
+                ordersQuery.findObjectsInBackground(block: { (orderObjects, error) in
+                    if error == nil {
+                        //return results
+                        flutterResult(self.databaseHelper.objConverter.createMapsFromObjects(parseObjects: orderObjects!))
+                    } else {
+                        //error getting orders, return false
+                        flutterResult(false)
+                    }
+                })
+            }
+                
+                //method to get user's past orders
+            else if flutterMethodCall.method == "getUserPastOrders" {
+                //get arguments
+                let arguments = flutterMethodCall.arguments as! [String : Any]
+                let fromLocalDatastore = arguments["fromLocalDatastore"] as! Bool
+                
+                //create query
+                let ordersQuery = PFQuery(className: "Order")
+                ordersQuery.whereKey("statusCode", equalTo: 4)
+                
+                //determine source
+                if fromLocalDatastore {
+                    ordersQuery.fromLocalDatastore()
+                }
+                
+                //execute query
+                ordersQuery.findObjectsInBackground(block: { (orderObjects, error) in
+                    if error == nil {
+                        //return results
+                        flutterResult(self.databaseHelper.objConverter.createMapsFromObjects(parseObjects: orderObjects!))
+                    } else {
+                        //error getting orders, return false
+                        flutterResult(false)
+                    }
+                })
+            }
             
             //method to get user's all orders
-            if flutterMethodCall.method == "getUserOrders" {
+            else if flutterMethodCall.method == "getUserOrders" {
                 self.orderHelper.getUserOrders(flutterResult: flutterResult)
             }
                 
@@ -166,10 +281,6 @@ import PaymentSDK
             else if flutterMethodCall.method == "getUserPastOrders" {
                 self.orderHelper.getUserPastOrders(flutterResult: flutterResult)
             }
-                
-                //            else if flutterMethodCall.method == "checkoutUser" {
-                //
-                //            }
                 
                 //method to check the user out
             else if flutterMethodCall.method == "checkoutUser" {
@@ -229,6 +340,33 @@ import PaymentSDK
                     }
                 })
                 //
+            }
+
+            //method to save review
+            else if flutterMethodCall.method == "saveReview" {
+                //get arguments
+                let arguments = flutterMethodCall.arguments as! [String : Any]
+                let forId = arguments["forId"] as! String
+                let rating = arguments["rating"] as! Int
+                let review = arguments["review"] as! String
+                let reviewType = arguments["reviewType"] as! String
+
+                //call cloud function
+                let params : [String : Any] = [
+                    "fromId": PFUser.current()!.objectId!,
+                    "forId": forId,
+                    "rating": rating,
+                    "review": review,
+                    "reviewType": reviewType
+                ]
+                PFCloud.callFunction(inBackground: "saveReview", withParameters: params, block: { (result, error) in
+                    //return result
+                    if error == nil {
+                        flutterResult(result)
+                    } else {
+                        flutterResult(false)
+                    }
+                })
             }
         }
         

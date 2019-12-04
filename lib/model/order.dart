@@ -2,6 +2,7 @@ class Order {
   //Properties
   String objectId;
   String createdAt;
+  DateTime createdAtDate;
   String user;
   String location;
   List<OrderItem> orderItems;
@@ -16,6 +17,7 @@ class Order {
   Order.fromMap(var map) {
     objectId = map["objectId"];
     createdAt = map["createdAt"];
+    createdAtDate = DateTime.parse(createdAt).toLocal();
     user = map["user"];
     location = map["location"];
     orderItems = OrderItem.createListFromMaps(map["items"]);

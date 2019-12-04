@@ -459,7 +459,7 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
 
   //cart listener methods
   //method for when an item is added to a cart
-  void onItemAddedToCart(Item item) async {
+  void onItemAddedToCart({Item item, BuildContext context}) async {
     //call platform channel method
     var success =
         await cartPlatformChannel.invokeMethod("addItemToCart", item.objectId);
@@ -470,13 +470,23 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
         cartExists = success;
       });
     }
+
+    //if successfully added, show message
+    if (success && context != null) {
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Item added to cart"),
+          duration: Duration(milliseconds: 800),
+        ),
+      );
+    }
   }
 
   //method for when an item is removed from cart
-  void onItemRemovedFromCart(Item item) {
+  void onItemRemovedFromCart({Item item, BuildContext context}) {
     //do nothing
   }
 
   //method for when an item is deleted from cart
-  void onItemDeletedFromCart(Item item) {}
+  void onItemDeletedFromCart({Item item, BuildContext context}) {}
 }

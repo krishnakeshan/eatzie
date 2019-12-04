@@ -12,6 +12,7 @@ import 'package:eatzie/model/location.dart';
 import 'package:eatzie/model/cart.dart';
 
 class CartWidget extends StatefulWidget {
+  //Methods
   @override
   _CartWidgetState createState() {
     return _CartWidgetState();
@@ -105,7 +106,7 @@ class _CartWidgetState extends State<CartWidget> {
 
     //return a list of carts if more than one carts
     else {
-      Widget cartsList = ListView.builder(
+      return ListView.builder(
         itemBuilder: (buildContext, index) {
           //return a widget
           return CartLocationListViewItem(
@@ -114,14 +115,12 @@ class _CartWidgetState extends State<CartWidget> {
         },
         itemCount: cartObjects.length,
       );
-
-      return cartsList;
     }
   }
 
   //method to get the cart objects for this user
   Future<void> _getUserCartObjects() async {
-    var cartObjects =
+    var cartObjectMaps =
         await cartPlatformChannel.invokeMethod("getUserCartObjects");
 
     //initialize cartObjects since search finished
@@ -130,10 +129,10 @@ class _CartWidgetState extends State<CartWidget> {
     });
 
     //if cartObjects were found, initialize them and load into array
-    if (cartObjects.isNotEmpty) {
+    if (cartObjectMaps.isNotEmpty) {
       List<Cart> tempArray = new List();
-      for (var cartObject in cartObjects) {
-        var newCartObject = Cart.fromMap(map: cartObject);
+      for (var cartObjectMap in cartObjectMaps) {
+        var newCartObject = Cart.fromMap(map: cartObjectMap);
         tempArray.add(newCartObject);
       }
 
@@ -145,6 +144,7 @@ class _CartWidgetState extends State<CartWidget> {
 
       //if only one cart was found, view that cart
       if (tempArray.length == 1) {
+        //open ViewLocationCart screen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -506,8 +506,7 @@ class _ViewCartWidgetState extends State<ViewCartWidget>
 
   //CartListener method implementations
   //method for when an item is added to the cart
-  void onItemAddedToCart(Item item) async {
-    print("debugk item added to cart ${item.name}");
+  void onItemAddedToCart({Item item, BuildContext context}) async {
     var updatedCart = await cartPlatformChannel
         .invokeMethod("addItemToCart", [item.objectId, true]);
 
@@ -518,8 +517,7 @@ class _ViewCartWidgetState extends State<ViewCartWidget>
   }
 
   //method for when an item is removed from the cart
-  void onItemRemovedFromCart(Item item) async {
-    print("debugk item removed from cart ${item.name}");
+  void onItemRemovedFromCart({Item item, BuildContext context}) async {
     var updatedCart = await cartPlatformChannel
         .invokeMethod("removeItemFromCart", [item.objectId, true]);
 
@@ -530,7 +528,7 @@ class _ViewCartWidgetState extends State<ViewCartWidget>
   }
 
   //method for when an item is deleted from cart
-  void onItemDeletedFromCart(Item item) async {}
+  void onItemDeletedFromCart({Item item, BuildContext context}) async {}
 }
 
 class CartItemListViewItem extends StatefulWidget {
@@ -667,7 +665,9 @@ class _CartItemListViewItemState extends State<CartItemListViewItem> {
                       ),
                       onTap: () {
                         if (cartItem.item.name != null) {
-                          cartListener.onItemRemovedFromCart(cartItem.item);
+                          cartListener.onItemRemovedFromCart(
+                            item: cartItem.item,
+                          );
                         }
                       },
                       borderRadius: BorderRadius.circular(5),
@@ -704,10 +704,8 @@ class _CartItemListViewItemState extends State<CartItemListViewItem> {
                       ),
                       onTap: () {
                         //call method on listener if this cartItem's Item isn't null
-                        print("reduce item onTap");
                         if (cartItem.item.name != null) {
-                          print("cartItem name not null");
-                          cartListener.onItemAddedToCart(cartItem.item);
+                          cartListener.onItemAddedToCart(item: cartItem.item);
                         }
                       },
                       borderRadius: BorderRadius.circular(5),

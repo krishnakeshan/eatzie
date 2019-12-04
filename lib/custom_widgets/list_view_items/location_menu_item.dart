@@ -137,7 +137,10 @@ class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
               onPressed: () {
                 //call method to add an item to the cart
                 if (this.cartListener != null) {
-                  this.cartListener.onItemAddedToCart(item);
+                  this.cartListener.onItemAddedToCart(
+                        item: item,
+                        context: context,
+                      );
                 }
               },
             ),

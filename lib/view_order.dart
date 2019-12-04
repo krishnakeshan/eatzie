@@ -1,3 +1,4 @@
+import 'package:eatzie/AppManager.dart';
 import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -38,10 +39,22 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
   Location location;
   List<Item> items;
 
+  AppManager appManager = AppManager.getInstance();
+
   //Constructors
   _ViewOrderWidgetState({this.order, this.location, this.items});
 
   //Methods
+  @override
+  void initState() {
+    super.initState();
+
+    //get items if items not supplied
+    if (items == null) {
+      _getItems();
+    }
+  }
+
   @override
   Widget build(BuildContext buildContext) {
     return Scaffold(
@@ -143,7 +156,7 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
             //Time Text
             margin: EdgeInsets.only(top: 8),
             child: Text(
-              order.createdAt,
+              _getOrderTimestampString(),
               style: TextStyle(
                 color: Colors.blueGrey,
                 fontSize: 14,
@@ -353,6 +366,10 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
   List<Widget> _getOrderItemsList() {
     List<Widget> orderItems = List();
 
+    if (items == null) {
+      return orderItems;
+    }
+
     //add each item in order
     for (OrderItem orderItem in order.orderItems) {
       //find corresponding Item for this orderItem
@@ -374,5 +391,32 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
 
     //return created list
     return orderItems;
+  }
+
+  //method to get items of order
+  void _getItems() async {
+    //create temporary list
+    List<Item> tempItems = List();
+    for (OrderItem orderItem in order.orderItems) {
+      var itemMap = await appManager.getObjectWithId(
+        className: "Item",
+        objectId: orderItem.itemId,
+      );
+
+      tempItems.add(Item.fromMap(map: itemMap));
+    }
+
+    //call setState
+    if (mounted) {
+      setState(() {
+        items = tempItems;
+      });
+    }
+  }
+
+  //method to get order timestamp string
+  String _getOrderTimestampString() {
+    DateTime orderDate = order.createdAtDate;
+    return "${orderDate.day}/${orderDate.month}/${orderDate.year} @ ${orderDate.hour}:${orderDate.minute}";
   }
 }

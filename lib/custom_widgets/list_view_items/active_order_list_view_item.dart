@@ -50,11 +50,13 @@ class _ActiveOrderListViewItemState extends State<ActiveOrderListViewItem> {
     if (location == null) {
       return Container(
         alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
         child: Container(
-          width: 30,
-          height: 30,
-          child: CircularProgressIndicator(),
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(
+            backgroundColor: Colors.grey,
+          ),
         ),
       );
     }

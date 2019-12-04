@@ -26,7 +26,7 @@ class Cart {
     //get items
     for (var itemObject in map["items"]) {
       CartItem newCartItem = CartItem();
-      newCartItem.item.objectId = itemObject["item"];
+      newCartItem.item.objectId = itemObject["itemId"];
       newCartItem.quantity = itemObject["quantity"];
       cartItems.add(newCartItem);
     }
@@ -50,7 +50,7 @@ class Cart {
     cartItems.clear();
     for (var itemObject in map["items"]) {
       CartItem newCartItem = CartItem();
-      newCartItem.item.objectId = itemObject["item"];
+      newCartItem.item.objectId = itemObject["itemId"];
       newCartItem.quantity = itemObject["quantity"];
       cartItems.add(newCartItem);
     }
