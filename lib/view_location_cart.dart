@@ -44,6 +44,9 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
 
     //get location
     _getLocation();
+
+    //get cart
+    _getCart();
   }
 
   @override
@@ -60,7 +63,7 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
           Container(
             margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Text(
-              "Mugs N' Burgers",
+              location != null ? location.getName() : "          ",
               style: TextStyle(
                 color: Colors.black87,
                 fontSize: 24,
@@ -69,11 +72,11 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
             ),
           ),
 
-          //Location location Text xD
+          //Location address Text xD
           Container(
             margin: EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Text(
-              "Whitefield, Bangalore",
+              location != null ? location.getAddress() : "          ",
               style: TextStyle(
                 color: Colors.blueGrey,
                 fontSize: 14,
@@ -148,7 +151,7 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: Text(
-                      "Rs. 350",
+                      "Rs. ${_getCartTotal()}",
                       style: TextStyle(
                         color: Colors.red,
                         fontSize: 12,
@@ -219,9 +222,6 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
       setState(() {
         location = Location.fromMap(locationMap);
       });
-
-      //call _getCart()
-      _getCart();
     }
   }
 
@@ -230,7 +230,7 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
     var result = await cartChannel.invokeMethod(
       "getUserCartForLocation",
       {
-        "locationId": location.getObjectId(),
+        "locationId": locationId,
       },
     );
 
@@ -252,8 +252,23 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
     }
   }
 
+  //method to get cart total
+  dynamic _getCartTotal() {
+    double total = 0;
+    if (cart != null && cart.cartItems.isNotEmpty) {
+      for (CartItem cartItem in cart.cartItems) {
+        if (cartItem.item.ppu != null && cartItem.quantity != null)
+          total += cartItem.item.ppu * cartItem.quantity;
+      }
+
+      return total;
+    } else {
+      return "-";
+    }
+  }
+
   //CartListener methods
-  void onItemAddedToCart(Item item) async {
+  void onItemAddedToCart({Item item, BuildContext context}) async {
     //increment quantity on local object
     int i = 0;
     for (; i < cart.cartItems.length; i++) {
@@ -280,7 +295,7 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
     }
   }
 
-  void onItemRemovedFromCart(Item item) async {
+  void onItemRemovedFromCart({Item item, BuildContext context}) async {
     //decrement quantity on local object
     int i = 0;
     for (; i < cart.cartItems.length; i++) {
@@ -307,5 +322,5 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
     }
   }
 
-  void onItemDeletedFromCart(Item item) async {}
+  void onItemDeletedFromCart({Item item, BuildContext context}) async {}
 }
