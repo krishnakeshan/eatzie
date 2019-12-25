@@ -7,6 +7,7 @@ import 'package:eatzie/model/order.dart';
 class AppManager {
   //Properties
   static AppManager instance;
+  static const authChannel = MethodChannel("com.qrilt.eatzie/auth");
   static const mainChannel = MethodChannel("com.qrilt.eatzie/main");
   static const orderChannel = MethodChannel("com.qrilt.eatzie/order");
 

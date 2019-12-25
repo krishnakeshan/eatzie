@@ -71,7 +71,9 @@ class _WelcomeScreenWidgetState extends State<WelcomeScreenWidget> {
                   ),
                   onPressed: () {
                     //call method to initiate login
-                    _initiateLogin();
+                    // _initiateLogin();
+
+                    //open phone number screen
                   },
                 ),
               ),

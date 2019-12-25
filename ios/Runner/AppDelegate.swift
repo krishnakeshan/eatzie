@@ -102,18 +102,6 @@ import PaymentSDK
                 let locationId = flutterMethodCall.arguments as! String
                 self.databaseHelper.getItemsForLocation(locationId: locationId, flutterResult: flutterResult)
             }
-                
-                //method to get Location object from server
-            else if flutterMethodCall.method == "getLocationObject" {
-                let locationId = flutterMethodCall.arguments as! String
-                self.databaseHelper.getLocationObject(locationId: locationId, flutterResult: flutterResult)
-            }
-                
-                //method to get Item object from server
-            else if flutterMethodCall.method == "getItemObject" {
-                let itemId = flutterMethodCall.arguments as! String
-                self.databaseHelper.getItemObject(itemId: itemId, flutterResult: flutterResult)
-            }
         }
         
         //set method call handler for cart channel
@@ -152,9 +140,10 @@ import PaymentSDK
         //set method call handler for order channel
         orderChannel.setMethodCallHandler { (flutterMethodCall, flutterResult) in
             //method to sync user's active orders
-            if flutterMethodCall.method == "syncUserActiveOrders" {
+            if flutterMethodCall.method == "syncUserActiveOrders" { 
                 //create query to get orders
                 let activeOrdersQuery = PFQuery(className: "Order")
+                activeOrdersQuery.whereKey("user", equalTo: PFUser.current()!.objectId!)
                 activeOrdersQuery.whereKey("statusCode", lessThan: 4)
                 activeOrdersQuery.findObjectsInBackground(block: { (activeOrders, error) in
                     if error == nil {
@@ -186,6 +175,7 @@ import PaymentSDK
             else if flutterMethodCall.method == "syncUserPastOrders" {
                 //create query to get orders
                 let pastOrdersQuery = PFQuery(className: "Order")
+                pastOrdersQuery.whereKey("user", equalTo: PFUser.current()!.objectId!)
                 pastOrdersQuery.whereKey("statusCode", equalTo: 4)
                 pastOrdersQuery.findObjectsInBackground(block: { (pastOrders, error) in
                     if error == nil {
@@ -221,6 +211,7 @@ import PaymentSDK
                 
                 //create query
                 let ordersQuery = PFQuery(className: "Order")
+                ordersQuery.whereKey("user", equalTo: PFUser.current()!.objectId!)
                 ordersQuery.whereKey("statusCode", lessThan: 4)
                 
                 //determine source
@@ -248,6 +239,7 @@ import PaymentSDK
                 
                 //create query
                 let ordersQuery = PFQuery(className: "Order")
+                ordersQuery.whereKey("user", equalTo: PFUser.current()!.objectId!)
                 ordersQuery.whereKey("statusCode", equalTo: 4)
                 
                 //determine source

@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'welcome_screen.dart';
+import 'package:eatzie/auth_screens/welcome_screen.dart';
+import 'package:eatzie/auth_screens/phone_number_screen.dart';
 import 'package:eatzie/custom_widgets/list_view_items/location_list_view_item.dart';
 import 'cart.dart';
 import 'orders_tab_widget.dart';
@@ -22,7 +23,7 @@ class EatzieApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.white,
       ),
-      home: HomePage(),
+      home: PhoneNumberScreen(),
     );
   }
 }
