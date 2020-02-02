@@ -26,7 +26,7 @@ class Item {
   }
 
   //setters
-  void setCreatedAt(String dateString) {
-    createdAt = DateTime.parse(dateString);
+  void setCreatedAt(num dateString) {
+    createdAt = DateTime.fromMillisecondsSinceEpoch(dateString);
   }
 }

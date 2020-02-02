@@ -23,7 +23,7 @@ class EatzieApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.white,
       ),
-      home: PhoneNumberScreen(),
+      home: HomePage(),
     );
   }
 }
@@ -187,7 +187,7 @@ class _HomeWidgetState extends State<HomeWidget> {
           elevation: 0,
           child: Container(
             //Search Bar Row
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[

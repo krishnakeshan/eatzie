@@ -4,8 +4,8 @@ import AccountKit
 import Firebase
 import FirebaseAuth
 import Parse
-import PaymentSDK
-//import Razorpay
+import Razorpay
+import PlugNPlay
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -15,7 +15,7 @@ import PaymentSDK
     var cartHelper = CartHelper()
     var orderHelper = OrderHelper()
     var accountKit: AccountKitManager!
-    //    var razorPay: Razorpay!
+    var razorPay: Razorpay!
     
     //MARK: Methods
     func initStuff() {
@@ -31,7 +31,7 @@ import PaymentSDK
         Parse.initialize(with: parseClientConfiguration)
         
         //initialize Razorpay
-        //        razorPay = Razorpay.initWithKey("rzp_test_26P7ZE9Um3qIIP", andDelegate: self)
+        razorPay = Razorpay.initWithKey("rzp_test_pGg7BFZv2anSv9", andDelegateWithData: self)
     }
     
     override func application(
@@ -71,6 +71,86 @@ import PaymentSDK
                 return
             }
                 
+                //method to start phone verification
+            else if flutterMethodCall.method == "startPhoneVerification" {
+                //get arguments
+                let arguments = flutterMethodCall.arguments as! [String : Any]
+                let countryCode = arguments["countryCode"] as! String
+                let phoneNumber = arguments["phoneNumber"] as! String
+                let numberToVerify = "+" + countryCode + phoneNumber
+                
+                //start verification
+                PhoneAuthProvider.provider().verifyPhoneNumber(numberToVerify, uiDelegate: nil, completion: { (verificationId, error) in
+                    //check if error occured
+                    if let error = error {
+                        //call method on auth channel
+                        authChannel.invokeMethod("verificationFailed", arguments: nil)
+                    }
+                    
+                        //no errors, call auth channel method to store id
+                    else {
+                        var arguments = [String : Any]()
+                        arguments["verificationId"] = verificationId!
+                        authChannel.invokeMethod("verificationCodeSent", arguments: arguments)
+                    }
+                })
+                
+                //return true result
+                flutterResult(true)
+            }
+                
+                //method to verify phone with code
+            else if flutterMethodCall.method == "verifyPhoneWithCode" {
+                //get arguments
+                let arguments = flutterMethodCall.arguments as! [String : Any]
+                let verificationId = arguments["verificationId"] as! String
+                let verificationCode = arguments["verificationCode"] as! String
+                
+                //create result map
+                var resultMap = [String : Any]()
+                
+                //create credential and sign in with Firebase
+                let credential = PhoneAuthProvider.provider().credential(withVerificationID: verificationId, verificationCode: verificationCode)
+                Auth.auth().signIn(with: credential, completion: { (result, error) in
+                    if error == nil {
+                        //user signed in with Firebase, sign in with Parse
+                        let params = [
+                            "firebaseUserId": Auth.auth().currentUser!.uid,
+                            "phoneNumber": Auth.auth().currentUser!.phoneNumber!
+                        ]
+                        PFCloud.callFunction(inBackground: "logInUser", withParameters: params, block: { (result, error) in
+                            print("debugk called log in user")
+                            if error == nil {
+                                let resultDict = result as! [String : Any]
+                                
+                                //got parse token, sign in
+                                if resultDict["success"] as! Bool {
+                                    PFUser.become(inBackground: resultDict["parseSessionToken"] as! String, block: { (user, error) in
+                                        if error == nil {
+                                            //signed in with everything, return true
+                                            resultMap["success"] = true
+                                            flutterResult(resultMap)
+                                        }
+                                    })
+                                } else {
+                                    //error occurred, return false
+                                    resultMap["success"] = false
+                                    flutterResult(resultMap)
+                                }
+                            } else {
+                                //error occurred, return false
+                                resultMap["success"] = false
+                                flutterResult(resultMap)
+                            }
+                        })
+                    } else {
+                        //user not signed in
+                        resultMap["success"] = false
+                        flutterResult(resultMap)
+                    }
+                })
+            }
+                
                 //method to initiate login
             else if flutterMethodCall.method == "initiateLogin" {
                 //set result object
@@ -99,8 +179,28 @@ import PaymentSDK
                 
                 //method to get items for a given location
             else if flutterMethodCall.method == "getItemsForLocation" {
-                let locationId = flutterMethodCall.arguments as! String
+                let arguments = flutterMethodCall.arguments as! [String : Any]
+                let locationId = arguments["locationId"] as! String
                 self.databaseHelper.getItemsForLocation(locationId: locationId, flutterResult: flutterResult)
+            }
+            
+            //method to get reviews for an entity
+            else if flutterMethodCall.method == "getReviewsForId" {
+                //get arguments
+                let arguments = flutterMethodCall.arguments as! [String : Any]
+                let forId = arguments["forId"] as! String
+                
+                //create query
+                let reviewsQuery = PFQuery(className: "Review")
+                reviewsQuery.whereKey("forId", equalTo: forId)
+                reviewsQuery.findObjectsInBackground(block: { (reviews, error) in
+                    if error == nil {
+                        //convert and return
+                        flutterResult(self.databaseHelper.objConverter.createMapsFromObjects(parseObjects: reviews!))
+                    } else {
+                        flutterResult(false)
+                    }
+                })
             }
         }
         
@@ -120,19 +220,22 @@ import PaymentSDK
                 
                 //method to add an item to the cart
             else if flutterMethodCall.method == "addItemToCart" {
-                let itemId = flutterMethodCall.arguments as! String
+                let arguments = flutterMethodCall.arguments as! [String : Any]
+                let itemId = arguments["itemId"] as! String
                 self.cartHelper.addItemToCart(itemId: itemId, flutterResult: flutterResult);
             }
                 
                 //method to remove an item from cart
             else if flutterMethodCall.method == "removeItemFromCart" {
-                let itemId = flutterMethodCall.arguments as! String
+                let arguments = flutterMethodCall.arguments as! [String : Any]
+                let itemId = arguments["itemId"] as! String
                 self.cartHelper.removeItemFromCart(itemId: itemId, flutterResult: flutterResult)
             }
                 
                 //method to check if a cart exists for a given location
             else if flutterMethodCall.method == "doesCartExist" {
-                let locationId = flutterMethodCall.arguments as! String
+                let arguments = flutterMethodCall.arguments as! [String : Any]
+                let locationId = arguments["locationId"] as! String
                 self.cartHelper.doesCartExist(locationId: locationId, flutterResult: flutterResult)
             }
         }
@@ -274,65 +377,106 @@ import PaymentSDK
                 self.orderHelper.getUserPastOrders(flutterResult: flutterResult)
             }
                 
-                //method to check the user out
+                //method to checkout user
             else if flutterMethodCall.method == "checkoutUser" {
                 //get arguments
                 let arguments = flutterMethodCall.arguments as! [String : Any]
+                let cartId = arguments["cartId"] as! String
                 
                 //prepare params
                 let params = [
-                    "user": PFUser.current()!.objectId!,
-                    "cartId": arguments["cartId"] as! String
+                    "userId": PFUser.current()!.objectId!,
+                    "cartId": cartId
                 ]
                 
-                //call cloud function
+                //call cloud function to create order
                 PFCloud.callFunction(inBackground: "createOrder", withParameters: params, block: { (result, error) in
                     if error == nil {
-                        var resultDict = result as! [String : Any]
-                        
-                        //call cloud function to generate checksum
-                        let params = [
-                            "userId": PFUser.current()!.objectId!,
-                            "orderId": resultDict["orderId"] as! String
+                        let resultMap = result as! [String : Any]
+                        //call function to create RazorPay order
+                        let rpParams = [
+                            "orderId": resultMap["orderId"] as! String
                         ]
-                        
-                        PFCloud.callFunction(inBackground: "generateChecksum", withParameters: params, block: { (result, error) in
+                        PFCloud.callFunction(inBackground: "createRazorPayOrder", withParameters: rpParams, block: { (result, error) in
                             if error == nil {
-                                let checksum = result as! String
-                                let orderId = resultDict["orderId"] as! String
-                                let orderTotal = resultDict["orderTotal"] as! NSNumber
-                                
-                                let order = PGOrder(orderID: "", customerID: "", amount: "", eMail: "", mobile: "")
-                                order.params = [
-                                    "MID": "Eatzie24294327914578",
-                                    "ORDER_ID": orderId,
-                                    "CUST_ID": PFUser.current()!.objectId!,
-                                    "CHANNEL_ID": "WAP",
-                                    "WEBSITE": "APPSTAGING",
-                                    "TXN_AMOUNT": "\(orderTotal)",
-                                    "INDUSTRY_TYPE_ID": "Retail",
-                                    "CHECKSUMHASH": checksum,
-                                    "CALLBACK_URL": "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=\(orderId)"
+                                let rpResult = result as! [String : Any]
+                                let checkoutOptions = [
+                                    "name": "Eatzie",
+                                    "description": "paying to mnb",
+                                    "order_id": rpResult["razorpay_order_id"] as! String,
+                                    "currency": "INR",
+                                    "amount": "100"
                                 ]
-                                
-                                let server = PGServerEnvironment().createStagingEnvironment()
-                                var txnController = PGTransactionViewController(nibName: nil, bundle: nil)
-                                txnController = txnController.initTransaction(for: order) as! PGTransactionViewController
-                                txnController.title = "Payment"
-                                txnController.server = server
-                                txnController.serverType = .eServerTypeStaging
-                                txnController.merchant = PGMerchantConfiguration.defaultConfiguration()
-                                txnController.delegate = self
-                                txnController.beginPGTransaction()
-                                
-                                //show payment gateway
-                                viewController.present(txnController, animated: true, completion: nil)
+                                self.razorPay.open(checkoutOptions)
                             }
                         })
                     }
                 })
-                //
             }
+                
+                //method to start checkout for user
+//            else if flutterMethodCall.method == "checkoutUser" {
+//                //get arguments
+//                let arguments = flutterMethodCall.arguments as! [String : Any]
+//                let cartId = arguments["cartId"] as! String
+//
+//                //prepare params
+//                let params = [
+//                    "userId": PFUser.current()!.objectId!,
+//                    "cartId": cartId
+//                ]
+//
+//                //call cloud function to create order
+//                PFCloud.callFunction(inBackground: "createOrder", withParameters: params, block: { (result, error) in
+//                    if error == nil {
+//                        var resultDict = result as! [String : Any]
+//
+//                        //call method to get hash for order
+//                        let params = [
+//                            "userId": PFUser.current()!.objectId!,
+//                            "orderId": resultDict["orderId"] as! String
+//                        ]
+//
+//                        //call cloud function to generate hash for payment gateway
+//                        PFCloud.callFunction(inBackground: "generateHashForOrder", withParameters: params, block: { (result, error) in
+//                            if error == nil {
+//                                let hashDict = result as! [String : Any]
+//
+//                                //got hash, start payu sequence
+//                                print(String(resultDict["orderTotal"] as! Double))
+//                                let txnParams = PUMTxnParam()
+//                                txnParams.phone = "9483009001"
+//                                txnParams.email = "krishnakeshan@gmail.com"
+//                                txnParams.amount = String(resultDict["orderTotal"] as! Int)
+//                                txnParams.environment = PUMEnvironment.production
+//                                txnParams.firstname = "krishna"
+//                                txnParams.key = "cSMqjMtA"
+//                                txnParams.merchantid = "6780337"
+//                                txnParams.txnID = (resultDict["orderId"] as! String)
+//                                txnParams.surl = "https://www.payumoney.com/mobileapp/payumoney/success.php"
+//                                txnParams.furl = "https://www.payumoney.com/mobileapp/payumoney/failure.php"
+//                                txnParams.productInfo = "food"
+//                                txnParams.udf1 = "udf1"; txnParams.udf2 = "udf2"; txnParams.udf3 = "udf3";
+//                                txnParams.udf4 = "udf4"; txnParams.udf5 = "udf5";
+//                                txnParams.hashValue = (hashDict["hash"] as! String)
+//
+//                                //open payment view controller
+//                                PlugNPlay.presentPaymentViewController(withTxnParams: txnParams, on: viewController, withCompletionBlock: { (response, error, id) in
+//                                    if error != nil {
+//                                        print(error!)
+//                                    }
+//
+//                                    if response != nil {
+//                                        print(response)
+//                                    }
+//
+//                                    print(id)
+//                                })
+//                            }
+//                        })
+//                    }
+//                })
+//            }
 
             //method to save review
             else if flutterMethodCall.method == "saveReview" {
@@ -442,20 +586,11 @@ extension AppDelegate: AKFViewControllerDelegate {
     }
 }
 
-//Payment Gateway Delegate Methods
-extension AppDelegate: PGTransactionDelegate {
-    //handle finished transaction
-    func didFinishedResponse(_ controller: PGTransactionViewController, response responseString: String) {
-        //finished
+//RazorPay Methods
+extension AppDelegate: RazorpayPaymentCompletionProtocolWithData {
+    func onPaymentError(_ code: Int32, description str: String, andData response: [AnyHashable : Any]?) {
     }
     
-    //handle cancelled transaction
-    func didCancelTrasaction(_ controller: PGTransactionViewController) {
-        //
-    }
-    
-    //handle missing parameters
-    func errorMisssingParameter(_ controller: PGTransactionViewController, error: NSError?) {
-        //
+    func onPaymentSuccess(_ payment_id: String, andData response: [AnyHashable : Any]?) {
     }
 }

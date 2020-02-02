@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'custom_widgets/card_image_view.dart';
 import 'custom_widgets/list_view_items/location_menu_item.dart';
 import 'package:eatzie/view_location_cart.dart';
+import 'package:eatzie/review_screens/view_location_reviews.dart';
 
 import 'package:eatzie/classes/listeners/cart_listener.dart';
 
@@ -207,44 +208,59 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
                         ),
                       ),
                       //Rating Row
-                      Container(
-                        padding: EdgeInsets.fromLTRB(20, 10, 20, 12),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            //Rating Text
-                            Container(
-                              margin: EdgeInsets.only(right: 4.0),
-                              child: Text(
-                                "4.3",
-                                style: TextStyle(
+                      GestureDetector(
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(20, 10, 20, 12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              //Rating Text
+                              Container(
+                                margin: EdgeInsets.only(right: 4.0),
+                                child: Text(
+                                  "4.3",
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 252, 100, 100),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              //Rating Star
+                              Container(
+                                child: Icon(
+                                  FontAwesomeIcons.solidStar,
+                                  size: 14,
                                   color: Color.fromARGB(255, 252, 100, 100),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
                                 ),
                               ),
-                            ),
-                            //Rating Star
-                            Container(
-                              child: Icon(
-                                FontAwesomeIcons.solidStar,
-                                size: 14,
-                                color: Color.fromARGB(255, 252, 100, 100),
-                              ),
-                            ),
-                            //Tap to see reviews Text
-                            Container(
-                              margin: EdgeInsets.only(left: 12),
-                              child: Text(
-                                "Tap to see reviews",
-                                style: TextStyle(
-                                  color: Colors.blueGrey,
-                                  fontSize: 12,
+                              //Tap to see reviews Text
+                              Container(
+                                margin: EdgeInsets.only(left: 12),
+                                child: Text(
+                                  "Tap to see reviews",
+                                  style: TextStyle(
+                                    color: Colors.blueGrey,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
+                        onTap: () {
+                          //Open Reviews Screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (buildContext) {
+                                return ViewLocationReviewsScreen(
+                                  locationId: location.getObjectId(),
+                                );
+                              },
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -366,7 +382,7 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
               color: Colors.white,
               child: Container(
                 padding: EdgeInsets.symmetric(
-                  vertical: 10,
+                  vertical: 4,
                   horizontal: 10,
                 ),
                 //Search Bar Inner Row
@@ -425,7 +441,11 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
   Future<void> _getItems() async {
     //'items' will be a list of LinkedHashMaps each repre. a Item Parse Object
     var items = await platformChannel.invokeMethod(
-        "getItemsForLocation", location.getObjectId());
+      "getItemsForLocation",
+      {
+        "locationId": location.getObjectId(),
+      },
+    );
 
     //for each item LinkedHashMap create an Item object
     List<Item> newItems = List();
@@ -450,7 +470,11 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
   //method to check if a cart exists for this location
   Future<void> _doesCartExist() async {
     bool cartExists = await cartPlatformChannel.invokeMethod(
-        "doesCartExist", location.getObjectId());
+      "doesCartExist",
+      {
+        "locationId": location.getObjectId(),
+      },
+    );
 
     setState(() {
       this.cartExists = cartExists;
@@ -461,8 +485,12 @@ class _ViewLocationWidgetState extends State<ViewLocationWidget>
   //method for when an item is added to a cart
   void onItemAddedToCart({Item item, BuildContext context}) async {
     //call platform channel method
-    var success =
-        await cartPlatformChannel.invokeMethod("addItemToCart", item.objectId);
+    var success = await cartPlatformChannel.invokeMethod(
+      "addItemToCart",
+      {
+        "itemId": item.objectId,
+      },
+    );
 
     //set state to show "View Cart" button
     if (mounted) {

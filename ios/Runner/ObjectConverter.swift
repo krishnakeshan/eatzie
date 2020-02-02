@@ -18,7 +18,7 @@ class ObjectConverter {
         
         //first assign basic properties
         resultMap["objectId"] = parseObject.objectId!
-        resultMap["createdAt"] = parseObject.createdAt!.description
+        resultMap["createdAt"] = Int(parseObject.createdAt!.timeIntervalSince1970 / 1000)
         
         //convert the rest of the attributes, except ACL
         for key in parseObject.allKeys {
@@ -62,7 +62,7 @@ class ObjectConverter {
             
             //attribute is of type Date
         else if obj is Date {
-            return (obj as! Date).description
+            return Int((obj as! Date).timeIntervalSince1970 / 1000)
         }
             
             //attribute is of type PFGeoPoint

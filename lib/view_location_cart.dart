@@ -10,6 +10,8 @@ import 'package:eatzie/custom_widgets/list_view_items/cart_item_list_view_item.d
 
 import 'package:eatzie/classes/listeners/cart_listener.dart';
 
+import 'package:eatzie/AppManager.dart';
+
 class ViewLocationCartScreen extends StatefulWidget {
   //Properties
   final String locationId;
@@ -188,17 +190,19 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
             ),
             splashColor: Colors.orange,
             onTap: () {
+              //show payment method dialog
+              _showPaymentMethods();
               //open checkout page
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (buildContext) {
-                    return CheckoutScreen(
-                      cart: cart,
-                    );
-                  },
-                ),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (buildContext) {
+              //       return CheckoutScreen(
+              //         cart: cart,
+              //       );
+              //     },
+              //   ),
+              // );
             },
           ),
         ],
@@ -209,12 +213,9 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
   //method to get Location
   void _getLocation() async {
     //call method channel
-    var locationMap = await mainChannel.invokeMethod(
-      "getObjectWithId",
-      {
-        "className": "Location",
-        "objectId": locationId,
-      },
+    var locationMap = await AppManager.getInstance().getObjectWithId(
+      className: "Location",
+      objectId: locationId,
     );
 
     //create map if result not null
@@ -252,6 +253,134 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
     }
   }
 
+  //method to show payment methods dialog
+  _showPaymentMethods() {
+    showDialog(
+      context: context,
+      builder: (buildContext) {
+        return Container(
+          child: Column(
+            children: <Widget>[
+              //Title
+              Container(
+                child: Text(
+                  "Select Payment Method",
+                ),
+              ),
+
+              //Pay Now Heading
+              Container(
+                child: Text(
+                  "Pay Now",
+                ),
+              ),
+
+              //Pay Using Wallet Option
+              Container(
+                child: Row(
+                  children: <Widget>[
+                    //Wallet Icon
+                    Icon(
+                      Icons.account_balance_wallet,
+                    ),
+
+                    //Eatzie Wallet Text
+                    Container(
+                      child: Text(
+                        "Eatzie Wallet",
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              //Pay Using Other Methods Option
+              Container(
+                child: Row(
+                  children: <Widget>[
+                    //Icon
+                    Icon(
+                      Icons.more_horiz,
+                    ),
+
+                    //Options Text
+                    Container(
+                      child: Text(
+                        "Card, UPI, Wallets, Net Banking, etc.",
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              //Pay Later Heading
+              Container(
+                child: Text(
+                  "Pay Later",
+                ),
+              ),
+
+              //Pay At Vendor Option
+              Container(
+                child: Row(
+                  children: <Widget>[
+                    //Icon
+                    Icon(
+                      Icons.location_on,
+                    ),
+
+                    //Pay At Vendor Column
+                    Column(
+                      children: <Widget>[
+                        //Pay at Vendor Text
+                        Text(
+                          "Pay at Vendor",
+                        ),
+
+                        //explanation
+                        Text(
+                          "Cash, Payment Apps, etc.",
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              //Proceed and cancel buttons
+              Row(
+                children: <Widget>[
+                  //Cancel Button
+                  FlatButton(
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+                    onPressed: () {},
+                  ),
+
+                  //Proceed Button
+                  RaisedButton(
+                    child: Text(
+                      "Proceed",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    color: Colors.green,
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   //method to get cart total
   dynamic _getCartTotal() {
     double total = 0;
@@ -284,8 +413,12 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
     }
 
     //call platform channel method to update db
-    var success =
-        await cartChannel.invokeMethod("addItemToCart", item.objectId);
+    var success = await cartChannel.invokeMethod(
+      "addItemToCart",
+      {
+        "itemId": item.objectId,
+      },
+    );
 
     //revert count if update failed
     if (!success) {
@@ -311,8 +444,12 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
     }
 
     //call platform channel method to update db
-    var success =
-        await cartChannel.invokeMethod("removeItemFromCart", item.objectId);
+    var success = await cartChannel.invokeMethod(
+      "removeItemFromCart",
+      {
+        "itemId": item.objectId,
+      },
+    );
 
     //revert count if update failed
     if (!success) {

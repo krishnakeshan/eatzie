@@ -1,12 +1,8 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
 
 import 'package:eatzie/AppManager.dart';
-
-import 'package:eatzie/model/order.dart';
 
 class OrderPaymentScreen extends StatefulWidget {
   //Properties
@@ -190,30 +186,30 @@ class _OrderPaymentScreenState extends State<OrderPaymentScreen> {
 
   //method to get available payment modes for this order
   _getPaymentModes() async {
-    print("getting payment modes");
-    //----------change this to production later
-    //got mid and transaction token, now make http call
-    final String url =
-        "https://securegw-stage.paytm.in/fetchPaymentOptions?mid=${transactionInitResult["mid"]}&orderId=$orderId";
-    print("created modes link $url");
-    var response = await http.post(
-      url,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: jsonEncode(
-        {
-          "head": {
-            "txnToken": transactionInitResult["transactionToken"],
-          },
-        },
-      ),
-    );
+    // print("getting payment modes");
+    // //----------change this to production later
+    // //got mid and transaction token, now make http call
+    // final String url =
+    //     "https://securegw-stage.paytm.in/fetchPaymentOptions?mid=${transactionInitResult["mid"]}&orderId=$orderId";
+    // print("created modes link $url");
+    // var response = await http.post(
+    //   url,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: jsonEncode(
+    //     {
+    //       "head": {
+    //         "txnToken": transactionInitResult["transactionToken"],
+    //       },
+    //     },
+    //   ),
+    // );
 
-    if (mounted) {
-      setState(() {
-        paymentModesInfo = jsonDecode(response.body);
-      });
-    }
+    // if (mounted) {
+    //   setState(() {
+    //     paymentModesInfo = jsonDecode(response.body);
+    //   });
+    // }
   }
 }

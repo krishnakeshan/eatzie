@@ -34,8 +34,8 @@ class Location {
     this._objectId = objectId;
   }
 
-  void setCreatedAt(String dateString) {
-    this._createdAt = DateTime.parse(dateString);
+  void setCreatedAt(num dateString) {
+    this._createdAt = DateTime.fromMillisecondsSinceEpoch(dateString);
   }
 
   void setImageURL(String imageURL) {

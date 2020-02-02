@@ -46,7 +46,8 @@ target 'Runner' do
   pod 'Parse'
   
   #Razorpay
-  pod 'razorpay-pod', '~> 1.1.1'
+  pod 'razorpay-pod', '~> 1.1.4'
+  pod 'PayUmoney_PnP'
 
   # Prepare symlinks folder. We use symlinks to avoid having Podfile.lock
   # referring to absolute paths on developers' machines.

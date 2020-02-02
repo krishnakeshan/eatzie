@@ -173,7 +173,7 @@ class _ActiveOrderListViewItemState extends State<ActiveOrderListViewItem> {
                     Container(
                       margin: EdgeInsets.only(top: 4),
                       child: Text(
-                        order.createdAt,
+                        order.createdAt.toString(),
                         style: TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 12,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:eatzie/AppManager.dart';
 import 'package:flutter/services.dart';
 import 'package:eatzie/model/item.dart';
 
@@ -20,7 +21,7 @@ class Cart {
   //constructor to make a Cart object from a Map
   Cart.fromMap({var map}) {
     this.objectId = map["objectId"];
-    this.createdAt = DateTime.parse(map["createdAt"]);
+    this.createdAt = DateTime.fromMillisecondsSinceEpoch(map["createdAt"]);
     this.locationId = map["location"];
 
     //get items
@@ -43,7 +44,7 @@ class Cart {
   //method to update this cart from a map (similar to using the constructor)
   void updateFromMap(var map) {
     this.objectId = map["objectId"];
-    this.createdAt = DateTime.parse(map["createdAt"]);
+    this.createdAt = DateTime.fromMillisecondsSinceEpoch(map["createdAt"]);
     this.locationId = map["location"];
 
     //get items
@@ -78,12 +79,9 @@ class CartItem {
   //Methods
   //method to get an Item object from server
   Future<void> getItemObject() async {
-    var itemObjectMap = await platformChannel.invokeMethod(
-      "getObjectWithId",
-      {
-        "className": "Item",
-        "objectId": this.item.objectId,
-      },
+    var itemObjectMap = await AppManager.getInstance().getObjectWithId(
+      className: "Item",
+      objectId: this.item.objectId,
     );
 
     //load information into item object

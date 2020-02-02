@@ -93,7 +93,7 @@ class _PastOrderListViewItemState extends State<PastOrderListViewItem> {
               children: <Widget>[
                 //Order date
                 Text(
-                  "${order.createdAtDate.day}/${order.createdAtDate.month}/${order.createdAtDate.year}",
+                  "${order.createdAt.day}/${order.createdAt.month}/${order.createdAt.year}",
                   style: TextStyle(
                     color: Colors.blueGrey,
                     fontSize: 12,
@@ -115,7 +115,7 @@ class _PastOrderListViewItemState extends State<PastOrderListViewItem> {
                 //Order Time
                 Container(
                   child: Text(
-                    "${order.createdAtDate.hour}:${order.createdAtDate.minute}",
+                    "${order.createdAt.hour}:${order.createdAt.minute}",
                     style: TextStyle(
                       color: Colors.blueGrey,
                       fontSize: 12,

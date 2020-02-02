@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:eatzie/custom_widgets/list_view_items/order_item_list_view_item.dart';
-import 'package:eatzie/review_order.dart';
+import 'package:eatzie/review_screens/review_order.dart';
 import 'package:eatzie/custom_widgets/order_progress.dart';
 
 import 'package:eatzie/classes/Constants.dart';
@@ -416,7 +416,7 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
 
   //method to get order timestamp string
   String _getOrderTimestampString() {
-    DateTime orderDate = order.createdAtDate;
+    DateTime orderDate = order.createdAt;
     return "${orderDate.day}/${orderDate.month}/${orderDate.year} @ ${orderDate.hour}:${orderDate.minute}";
   }
 }

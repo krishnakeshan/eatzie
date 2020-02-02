@@ -269,6 +269,7 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
                 borderRadius: BorderRadius.circular(5),
               ),
               child: TextField(
+                controller: verificationCodeController,
                 decoration: InputDecoration.collapsed(
                   hintText: "- - - - - -",
                   hintStyle: TextStyle(
@@ -405,8 +406,8 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
               "1. You entered the correct phone number.\n"
               "2. You entered the correct verification code\n"
               "3. You are connected to the Internet.\n"
-              "4. You are able to receive SMS\n\n"
-              "Please try again in sometime.",
+              "4. You are able to receive SMS messages\n\n"
+              "Please try again.",
             ),
             actions: <Widget>[
               //Close Button

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:eatzie/custom_icons/custom_icons_icons.dart';
+import 'package:eatzie/wallet_screens/view_wallet.dart';
 
 class ProfileTabWidget extends StatefulWidget {
   @override
@@ -157,6 +158,38 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                         ),
                       ),
                     ],
+                  ),
+                ),
+
+                Divider(
+                  height: 32,
+                ),
+
+                //Wallet Button
+                Container(
+                  child: FlatButton.icon(
+                    icon: Icon(
+                      Icons.account_balance_wallet,
+                      color: Colors.green,
+                    ),
+                    label: Text(
+                      "Wallet",
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () {
+                      //open wallet screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (buildContext) {
+                            return ViewWalletScreen();
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],

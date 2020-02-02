@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 
 import 'package:eatzie/main.dart';
 
+import 'package:eatzie/auth_screens/phone_number_screen.dart';
+
 class WelcomeScreenWidget extends StatefulWidget {
   //Methods
   @override
@@ -74,6 +76,14 @@ class _WelcomeScreenWidgetState extends State<WelcomeScreenWidget> {
                     // _initiateLogin();
 
                     //open phone number screen
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (buildContext) {
+                          return PhoneNumberScreen();
+                        },
+                      ),
+                    );
                   },
                 ),
               ),
