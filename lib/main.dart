@@ -58,7 +58,13 @@ class _HomePageState extends State<HomePage> {
     if (_isUserLoggedIn != null && _isUserLoggedIn) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(_tabTitles[_selectedIndex]),
+          backgroundColor: Colors.white,
+          title: Text(
+            _tabTitles[_selectedIndex],
+            style: TextStyle(
+              color: Colors.deepOrange,
+            ),
+          ),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.shopping_cart),
@@ -87,23 +93,47 @@ class _HomePageState extends State<HomePage> {
         ),
         body: _children[_selectedIndex],
         bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.shifting,
+          backgroundColor: Color.fromARGB(255, 240, 240, 240),
           currentIndex: _selectedIndex,
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              title: Text("Home"),
-              backgroundColor: Colors.red,
+              icon: Icon(
+                Icons.home,
+                color: Colors.deepOrange,
+              ),
+              title: Text(
+                "Home",
+                style: TextStyle(
+                  color: Colors.deepOrange,
+                ),
+              ),
+              backgroundColor: Colors.white,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.brightness_1),
-              title: Text("Orders"),
-              backgroundColor: Colors.red,
+              icon: Icon(
+                Icons.brightness_1,
+                color: Colors.deepOrange,
+              ),
+              title: Text(
+                "Orders",
+                style: TextStyle(
+                  color: Colors.deepOrange,
+                ),
+              ),
+              backgroundColor: Colors.white,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.face),
-              title: Text("Profile"),
-              backgroundColor: Colors.black,
+              icon: Icon(
+                Icons.face,
+                color: Colors.deepOrange,
+              ),
+              title: Text(
+                "Profile",
+                style: TextStyle(
+                  color: Colors.deepOrange,
+                ),
+              ),
+              backgroundColor: Colors.white,
             ),
           ],
           onTap: (int selected) {
