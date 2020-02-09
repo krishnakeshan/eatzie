@@ -66,7 +66,7 @@ class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
                 Text(
                   item.name,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                   maxLines: 1,
@@ -78,7 +78,7 @@ class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
                     item.description,
                     style: TextStyle(
                       color: Colors.blueGrey,
-                      fontSize: 12,
+                      fontSize: 13,
                     ),
                     maxLines: 1,
                   ),
@@ -90,7 +90,7 @@ class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        "Rs. ${item.ppu}",
+                        "Rs. ${item.ppu / 100}",
                         style: TextStyle(
                           color: Colors.deepOrange,
                           fontSize: 11,
@@ -102,7 +102,7 @@ class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
                         child: Icon(
                           Icons.star,
                           color: Colors.blueGrey,
-                          size: 11,
+                          size: 12,
                         ),
                         margin: EdgeInsets.only(left: 6, right: 2),
                       ),
@@ -111,7 +111,7 @@ class _LocationMenuListViewItemState extends State<LocationMenuListViewItem> {
                         style: TextStyle(
                           color: Colors.blueGrey,
                           fontWeight: FontWeight.w500,
-                          fontSize: 11,
+                          fontSize: 12,
                         ),
                       ),
                     ],

@@ -68,11 +68,11 @@ class _CartItemListViewItemState extends State<CartItemListViewItem> {
                     textAlign: TextAlign.left,
                   ),
 
-                  //Description Text
+                  //Price Text
                   Container(
                     margin: EdgeInsets.only(top: 4),
                     child: Text(
-                      cartItem.item.description,
+                      "Rs. ${cartItem.item.ppu / 100}",
                       style: TextStyle(
                         color: Colors.blueGrey,
                         fontSize: 12,

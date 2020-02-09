@@ -52,8 +52,8 @@ class _LocationListViewItemState extends State<LocationListViewItem> {
                   //Image View for Restaurant Image
                   location.getImageURL(),
                   fit: BoxFit.cover,
-                  height: 50,
-                  width: 50,
+                  height: 60,
+                  width: 60,
                 ),
               ),
             ),
@@ -67,7 +67,7 @@ class _LocationListViewItemState extends State<LocationListViewItem> {
                   Text(
                     location.getName(),
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -78,7 +78,7 @@ class _LocationListViewItemState extends State<LocationListViewItem> {
                       location.getDescription(),
                       style: TextStyle(
                         color: Colors.blueGrey,
-                        fontSize: 11,
+                        fontSize: 12,
                       ),
                     ),
                   ),
