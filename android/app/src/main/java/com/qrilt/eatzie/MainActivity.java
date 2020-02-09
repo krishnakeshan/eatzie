@@ -407,6 +407,26 @@ public class MainActivity extends FlutterActivity implements PaymentResultWithDa
                         }
                     });
                 }
+
+                //method to clear this cart
+                else if (methodCall.method.equals("clearCart")) {
+                    //get arguments
+                    String cartId = methodCall.argument("cartId");
+
+                    //call cloud function to clear this cart
+                    HashMap<String, Object> params = new HashMap<>();
+                    params.put("cartId", cartId);
+                    ParseCloud.callFunctionInBackground("clearCart", params, new FunctionCallback<Object>() {
+                        @Override
+                        public void done(Object object, ParseException e) {
+                            if (e == null) {
+                                result.success(object);
+                            } else {
+                                result.success(false);
+                            }
+                        }
+                    });
+                }
             }
         });
 
@@ -545,6 +565,65 @@ public class MainActivity extends FlutterActivity implements PaymentResultWithDa
                     });
                 }
 
+                //method to create Order Razorpay Order
+                else if (methodCall.method.equals("checkoutWithRazorpay")) {
+                    //get arguments
+                    String cartId = methodCall.argument("cartId");
+
+                    //prepare params
+                    HashMap<String, Object> params = new HashMap<>();
+                    params.put("userId", ParseUser.getCurrentUser().getObjectId());
+                    params.put("cartId", cartId);
+
+                    //call cloud function to create order
+                    ParseCloud.callFunctionInBackground("createOrder", params, new FunctionCallback<HashMap<String, Object>>() {
+                        @Override
+                        public void done(HashMap<String, Object> object, ParseException e) {
+                            if (e == null) {
+                                //call function to create Razorpay order
+                                HashMap<String, Object> rpParams = new HashMap<>();
+                                rpParams.put("orderId", object.get("orderId"));
+
+                                ParseCloud.callFunctionInBackground("createRazorpayOrder", rpParams, new FunctionCallback<HashMap<String, Object>>() {
+                                    @Override
+                                    public void done(HashMap<String, Object> object, ParseException e) {
+                                        if (e == null) {
+                                            //Razorpay order created, now initiate payment
+                                            result.success(object);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+
+                //method to verify Order Razorpay payment
+                else if (methodCall.method.equals("verifyOrderRazorpayPayment")) {
+                    //get arguments
+                    String orderId = methodCall.argument("orderId");
+                    String razorpayOrderId = methodCall.argument("razorpayOrderId");
+                    String razorpayPaymentId = methodCall.argument("razorpayPaymentId");
+                    String razorpayPaymentSignature = methodCall.argument("razorpayPaymentSignature");
+
+                    //call cloud function
+                    HashMap<String, Object> params = new HashMap<>();
+                    params.put("orderId", orderId);
+                    params.put("razorpayOrderId", razorpayOrderId);
+                    params.put("razorpayPaymentId", razorpayPaymentId);
+                    params.put("razorpayPaymentSignature", razorpayPaymentSignature);
+                    ParseCloud.callFunctionInBackground("verifyOrderRazorpayPayment", params, new FunctionCallback<Object>() {
+                        @Override
+                        public void done(Object object, ParseException e) {
+                            if (e == null) {
+                                result.success(object);
+                            } else {
+                                result.success(false);
+                            }
+                        }
+                    });
+                }
+
                 // method to start checkout for user
                 else if (methodCall.method.equals("checkoutUser")) {
                     // call method to preload payment methods
@@ -564,7 +643,7 @@ public class MainActivity extends FlutterActivity implements PaymentResultWithDa
                                 @Override
                                 public void done(HashMap<String, Object> result, ParseException e) {
                                     if (e == null) {
-                                        // call function to create razorcpay order
+                                        // call function to create razorpay order
                                         HashMap<String, Object> rpParams = new HashMap<>();
                                         rpParams.put("orderId", result.get("orderId"));
 
@@ -625,30 +704,49 @@ public class MainActivity extends FlutterActivity implements PaymentResultWithDa
             }
         });
 
-        //register wallet channel and handler
+        // register wallet channel and handler
         walletChannel = new MethodChannel(getFlutterView(), walletChannelName);
         walletChannel.setMethodCallHandler(new MethodChannel.MethodCallHandler() {
             @Override
             public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-                //method to create wallet recharge order
-                if (call.method.equals("createWalletRechargeOrder")) {
-                    //get arguments
+                // method to get wallet balance
+                if (call.method.equals("getWalletBalance")) {
+                    // call cloud function to get balance
+                    HashMap<String, Object> params = new HashMap<>();
+                    params.put("userId", ParseUser.getCurrentUser().getObjectId());
+
+                    ParseCloud.callFunctionInBackground("getWalletBalance", params,
+                            new FunctionCallback<HashMap<String, Object>>() {
+                                @Override
+                                public void done(HashMap<String, Object> object, ParseException e) {
+                                    if (e == null) {
+                                        // return result map
+                                        result.success(object);
+                                    }
+                                }
+                            });
+                }
+
+                // method to create wallet recharge order
+                else if (call.method.equals("createWalletRechargeOrder")) {
+                    // get arguments
                     int amount = call.argument("amount");
 
-                    //call cloud function to create order
+                    // call cloud function to create order
                     HashMap<String, Object> params = new HashMap<>();
                     params.put("userId", ParseUser.getCurrentUser().getObjectId());
                     params.put("amount", amount);
 
-                    ParseCloud.callFunctionInBackground("createWalletRechargeOrder", params, new FunctionCallback<HashMap<String, Object>>() {
-                        @Override
-                        public void done(HashMap<String, Object> object, ParseException e) {
-                            if (e == null) {
-                                //return result map
-                                result.success(object);
-                            }
-                        }
-                    });
+                    ParseCloud.callFunctionInBackground("createWalletRechargeOrder", params,
+                            new FunctionCallback<HashMap<String, Object>>() {
+                                @Override
+                                public void done(HashMap<String, Object> object, ParseException e) {
+                                    if (e == null) {
+                                        // return result map
+                                        result.success(object);
+                                    }
+                                }
+                            });
                 }
             }
         });
