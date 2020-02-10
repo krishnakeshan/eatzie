@@ -409,14 +409,14 @@ public class MainActivity extends FlutterActivity implements PaymentResultWithDa
                 }
 
                 //method to clear this cart
-                else if (methodCall.method.equals("clearCart")) {
+                else if (methodCall.method.equals("deleteCartById")) {
                     //get arguments
                     String cartId = methodCall.argument("cartId");
 
                     //call cloud function to clear this cart
                     HashMap<String, Object> params = new HashMap<>();
                     params.put("cartId", cartId);
-                    ParseCloud.callFunctionInBackground("clearCart", params, new FunctionCallback<Object>() {
+                    ParseCloud.callFunctionInBackground("deleteCartById", params, new FunctionCallback<Object>() {
                         @Override
                         public void done(Object object, ParseException e) {
                             if (e == null) {
