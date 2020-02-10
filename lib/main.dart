@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
         ),
         body: _children[_selectedIndex],
         bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Color.fromARGB(255, 240, 240, 240),
+          backgroundColor: Color.fromARGB(255, 250, 250, 250),
           currentIndex: _selectedIndex,
           items: [
             BottomNavigationBarItem(

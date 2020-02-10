@@ -15,17 +15,19 @@ import 'package:eatzie/model/item.dart';
 
 class ViewOrderWidget extends StatefulWidget {
   //Properties
+  final String orderId;
   final Order order;
   final Location location;
   final List<Item> items;
 
   //Constructors
-  ViewOrderWidget({this.order, this.location, this.items});
+  ViewOrderWidget({this.orderId, this.order, this.location, this.items});
 
   //Methods
   @override
   _ViewOrderWidgetState createState() {
     return _ViewOrderWidgetState(
+      orderId: orderId,
       order: order,
       location: location,
       items: items,
@@ -35,6 +37,7 @@ class ViewOrderWidget extends StatefulWidget {
 
 class _ViewOrderWidgetState extends State<ViewOrderWidget> {
   //Properties
+  String orderId;
   Order order;
   Location location;
   List<Item> items;
@@ -42,15 +45,20 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
   AppManager appManager = AppManager.getInstance();
 
   //Constructors
-  _ViewOrderWidgetState({this.order, this.location, this.items});
+  _ViewOrderWidgetState({this.orderId, this.order, this.location, this.items});
 
   //Methods
   @override
   void initState() {
     super.initState();
 
+    //get order if not supplied
+    if (order == null) {
+      _getOrder();
+    }
+
     //get items if items not supplied
-    if (items == null) {
+    if (order != null && items == null) {
       _getItems();
     }
   }
@@ -81,13 +89,15 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    location.getName(),
+                    location != null ? location.getName() : "",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
+
+                //Call Button
                 InkWell(
                   child: Container(
                     padding: EdgeInsets.all(4),
@@ -103,23 +113,27 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
               ],
             ),
           ),
+
+          //Location Address
           Container(
-            //Location Address
             margin: EdgeInsets.only(top: 4),
             child: Text(
-              location.getAddress(),
+              location != null ? location.getAddress() : "",
               style: TextStyle(color: Colors.blueGrey),
             ),
           ),
+
           //Divider
           Divider(
             height: 20,
           ),
+
           //Order ID Title
           Container(
             margin: EdgeInsets.only(top: 8),
             child: Text("Order ID"),
           ),
+
           //Order ID Text
           Container(
             child: Row(
@@ -127,13 +141,15 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                 //Order ID Text Expanded
                 Expanded(
                   child: Text(
-                    order.objectId,
+                    order != null ? order.objectId : "",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
+
+                //Order QR Code button
                 IconButton(
                   icon: Icon(
                     FontAwesomeIcons.qrcode,
@@ -144,19 +160,22 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
               ],
             ),
           ),
+
           Divider(
             height: 10,
           ),
+
+          //Time Title
           Container(
-            //Time Title
             margin: EdgeInsets.only(top: 10),
             child: Text("Placed On"),
           ),
+
+          //Time Text
           Container(
-            //Time Text
             margin: EdgeInsets.only(top: 8),
             child: Text(
-              _getOrderTimestampString(),
+              order != null ? _getOrderTimestampString() : "",
               style: TextStyle(
                 color: Colors.blueGrey,
                 fontSize: 14,
@@ -164,9 +183,12 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
               ),
             ),
           ),
+
           Divider(
             height: 24,
           ),
+
+          //Order Status Title
           Container(
             margin: EdgeInsets.only(top: 12),
             child: Row(
@@ -176,21 +198,29 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                   style: TextStyle(),
                 ),
                 Text(
-                  Constants.OrderStatusStrings[order.statusCode],
+                  order != null
+                      ? Constants.OrderStatusStrings[order.statusCode]
+                      : "",
                   style: TextStyle(
-                    color: Constants.OrderStatusColors[order.statusCode],
+                    color: order != null
+                        ? Constants.OrderStatusColors[order.statusCode]
+                        : Colors.transparent,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
           ),
+
+          //Order Progress Widget
           OrderProgressWidget(
-            statusCode: order.statusCode,
+            statusCode: order != null ? order.statusCode : 0,
           ),
+
+          //Review Prompt
           Visibility(
             //only show if order is completed
-            visible: order.statusCode == 4,
+            visible: order != null ? order.statusCode == 4 : false,
             child: GestureDetector(
               //Review prompt gesture detector
               onTap: () {
@@ -208,8 +238,9 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                   ),
                 );
               },
+
+              //Review prompt card
               child: Card(
-                //Review prompt card
                 margin: EdgeInsets.only(top: 16, bottom: 16),
                 child: Container(
                   //Review prompt container
@@ -253,6 +284,7 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                         ),
                       ),
 
+                      //Rate order FAB
                       Container(
                         width: 35,
                         height: 35,
@@ -345,7 +377,7 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                 Expanded(
                   child: Container(
                     child: Text(
-                      "Rs. ${order.total}",
+                      order != null ? "Rs. ${order.total}" : "",
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         color: Colors.white,
@@ -391,6 +423,39 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
 
     //return created list
     return orderItems;
+  }
+
+  //method to get order
+  _getOrder() async {
+    //call platform method to fetch an object
+    var orderMap = await appManager.getObjectWithId(
+      className: "Order",
+      objectId: orderId,
+    );
+
+    if (mounted) {
+      setState(() {
+        this.order = Order.fromMap(orderMap);
+      });
+    }
+
+    //get location and items
+    _getLocation();
+    _getItems();
+  }
+
+  //method to get Location
+  _getLocation() async {
+    var locationMap = await appManager.getObjectWithId(
+      className: "Location",
+      objectId: order.location,
+    );
+
+    if (mounted) {
+      setState(() {
+        this.location = Location.fromMap(locationMap);
+      });
+    }
   }
 
   //method to get items of order

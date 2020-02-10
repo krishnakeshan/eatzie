@@ -10,6 +10,7 @@ class AppManager {
   static AppManager instance;
   static const authChannel = MethodChannel("com.qrilt.eatzie/auth");
   static const mainChannel = MethodChannel("com.qrilt.eatzie/main");
+  static const cartChannel = MethodChannel("com.qrilt.eatzie/cart");
   static const orderChannel = MethodChannel("com.qrilt.eatzie/order");
   static const walletChannel = MethodChannel("com.qrilt.eatzie/wallet");
 

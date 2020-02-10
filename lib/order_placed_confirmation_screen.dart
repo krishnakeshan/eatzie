@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
 
+import 'package:eatzie/main.dart';
+import 'package:eatzie/view_order.dart';
+
 class OrderPlacedConfirmationScreen extends StatefulWidget {
   //Properties
+  final String orderId;
+
   //Constructors
+  OrderPlacedConfirmationScreen({this.orderId});
+
   //Methods
   @override
   _OrderPlacedConfirmationScreenState createState() {
-    return _OrderPlacedConfirmationScreenState();
+    return _OrderPlacedConfirmationScreenState(orderId: orderId);
   }
 }
 
 class _OrderPlacedConfirmationScreenState
     extends State<OrderPlacedConfirmationScreen> {
   //Properties
+  String orderId;
+
   //Constructors
+  _OrderPlacedConfirmationScreenState({this.orderId});
+
   //Methods
   @override
   Widget build(BuildContext buildContext) {
@@ -78,6 +89,14 @@ class _OrderPlacedConfirmationScreenState
               ),
               onPressed: () {
                 //open View Order screen
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (buildContext) {
+                      return ViewOrderWidget();
+                    },
+                  ),
+                );
               },
             ),
           ),
@@ -100,7 +119,17 @@ class _OrderPlacedConfirmationScreenState
               ),
               onPressed: () {
                 //close this screen
-                Navigator.pop(context);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (buildContext) {
+                      return HomePage();
+                    },
+                  ),
+                  (route) {
+                    return true;
+                  },
+                );
               },
             ),
           ),

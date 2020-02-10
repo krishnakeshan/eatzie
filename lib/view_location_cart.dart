@@ -132,8 +132,9 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
                               onPressed: () {
                                 //close this dialog
                                 Navigator.pop(dialogContext);
+
                                 //call method to clear cart
-                                _clearCart();
+                                _deleteCart();
                               },
                             ),
                           ],
@@ -581,8 +582,17 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
   }
 
   //method to show "Clear Cart" dialog
-  _clearCart() async {
+  _deleteCart() async {
     //call cloud function to clear cart
+    var result = await AppManager.cartChannel.invokeMethod(
+      "deleteCartById",
+      {
+        "cartId": cart.objectId,
+      },
+    );
+
+    //go back to previous screen
+    Navigator.pop(context);
   }
 
   //CartListener methods
@@ -672,12 +682,22 @@ class _ViewLocationCartScreenState extends State<ViewLocationCartScreen>
     );
 
     if (result['result']) {
-      //payment was successful, show confirmation screen
+      //payment was successful, start deleting cart
+      AppManager.cartChannel.invokeMethod(
+        "deleteCartById",
+        {
+          "cartId": cart.objectId,
+        },
+      );
+
+      //show confirmation screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (buildContext) {
-            return OrderPlacedConfirmationScreen();
+            return OrderPlacedConfirmationScreen(
+              orderId: orderCreationResult['order_id'],
+            );
           },
         ),
       );
