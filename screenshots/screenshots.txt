@@ -1,0 +1,1 @@
+This directory contains some sample screenshots of the application.
